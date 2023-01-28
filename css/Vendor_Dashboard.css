@@ -1,0 +1,108 @@
+﻿main_vessel_body_wrap {
+    /*max-width: 100%;*/
+}
+
+.vessel_wrap {
+    /*max-width: 100%;*/
+    /*display: block;*/
+    /*margin: 18px 0 0 2px;*/
+}
+
+.left {
+    float: left;
+}
+
+.right {
+    float: right;
+}
+
+.clear {
+    clear: both;
+    float: none;
+}
+
+.grid_wrap {
+    display: grid;
+    line-height: 0.2;
+}
+
+.order_wrap {
+    display: inline-block;
+    float: left;
+}
+
+.item_wrap {
+    display: inline-block;
+    float: right;
+}
+
+.carsouel_wrap {
+    display: flex;
+}
+
+.vessel_table_wrap tr td,
+.vessel_table_wrap tr th {
+    padding: 25px 0 0 0px;
+    text-align: left;
+}
+
+.vessel_table_wrap {
+    width: 100%;
+    margin: 5px 0 0px 2px;
+    padding: 0 0;
+}
+
+    .vessel_table_wrap tr td.c1,
+    .vessel_table_wrap tr th.c1 {
+        width: 130px !important;
+    }
+
+.vessel_table_Vessel_wrap tr td,
+.vessel_table_Vessel_wrap tr th {
+    padding: 5px 0 0 0px;
+    text-align: left;
+}
+
+    .vessel_table_Vessel_wrap tr td.c1,
+    .vessel_table_Vessel_wrap tr th.c1 {
+        width: 130px !important;
+    }
+
+.vessel_table_Vessel_wrap {
+    width: 100%;
+    margin: 40px 0 0px 2px;
+    padding: 0 0;
+}
+.table-responsive {
+    height: 400px;
+}
+
+
+.btn_wrap {
+    margin: 0 -33px 0 0;
+}
+
+.purchase_vessel_btn {
+    margin-top: 30px;
+}
+
+.vessel_btn {
+    margin-top: 60px;
+}
+
+.page_count {
+    position: absolute;
+    top: -9px;
+    right: -41px;
+}
+.white {
+    color: #fff !important;
+    font-size: 0;
+    padding: 0 60px;
+}
+
+.table-hover tbody tr:hover .white {
+    color: rgba(70, 127, 207, 0.06) !important;
+    font-size: 0;
+    padding: 0 60px;
+}

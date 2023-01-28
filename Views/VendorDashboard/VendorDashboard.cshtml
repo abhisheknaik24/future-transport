@@ -1,0 +1,63 @@
+﻿
+@{
+    ViewBag.Title = "Vendor Dashboard";
+    Layout = "~/Views/Shared/_LayoutDashboard.cshtml";
+}
+
+<div class="page-header">
+    <h4 class="page-title" id="Month"></h4>
+</div>
+<div class="card">
+    <div class="card-body">
+        <div id="divCountTiles" style="margin-top:20px">
+            <div class="row">
+                @foreach (var i in @ViewBag.List as IEnumerable<FutureTransportEntities.BusinessEntities.VendorDashboard>)
+                {
+                    <div class="col-lg-3 col-sm-12">
+                        <div class="card randomColor" style="cursor:pointer">
+                            <div class="card-body" style="padding:0.2rem;" onclick="ShowBiddingSummary();">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <span class="text-white display-6"><i class="fa fa-truck fa-1x"></i></span>
+                                    </div>
+                                    <div class="text-right">
+                                        <h3 class="text-white">Quantity : @i.Quantity</h3>
+                                        <h3 class="text-white">Rate : @i.Rate</h3>
+                                        <h2 class="text-white mb-0">@i.BookingNo</h2>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        var colors = ['#6f6456', '#cddc49', '#cb7e94', '#e94b30', '#fee659', '#a1cfdd', '#01c5c4', '#b8de6f', '#f39233', '#c56183', '#b2deec', '#28abb9', '#2d6187', '#cc0e74'];
+        Array.prototype.getRandom = function (cut) {
+            var i = Math.floor(Math.random() * this.length);
+            if (cut && i in this) {
+                return this.splice(i, 1)[0];
+            }
+            return this[i];
+        }
+        $('.randomColor').each(function () {
+            var color = colors.getRandom();
+            $(this).css("background", color);
+        });
+
+        var month = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+        var d = new Date();
+        var name = month[d.getMonth()];
+        $("#Month").html(name + " Month Biddings");
+    });
+
+    function ShowBiddingSummary() {
+        document.location = '@Url.Action("Bidding", "Bidding")';
+    }
+</script>

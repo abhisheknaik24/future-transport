@@ -1,0 +1,317 @@
+﻿<div>
+    <div class="modal-header">
+        <h5 class="modal-title">Delivery Document</h5>
+        <label id="MSNoFile" style="visibility:hidden"></label>
+        <button type="button" class="close" id="isClosed" onclick="isClosed()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <form>
+            <div class="form-group">
+                <input type="file" id="documentAttachment" name="postedFile" />
+                <input type="Button" class="btn btn-primary" id="btnUpload" value="Upload" />
+            </div>
+            <div class="form-group">
+                <div class="table-responsive">
+                    <table id="documentAttachmentTable" class="table table-striped table-bordered" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th class="wd-15p sorting">Delivery Document Name</th>
+                                <th style="width:15px"></th>
+                                <th style="width:15px"></th>
+                            </tr>
+                        </thead>
+                        <tbody style="box-sizing :border-box;"></tbody>
+                    </table>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <label hidden id="load"></label>
+        <button class="btn btn-info pull-right" id="btnDone">Done</button>
+    </div>
+</div>
+
+@using (Html.BeginForm("DownloadDeliveryAttachment", "Booking", FormMethod.Post))
+{
+    <input type="hidden" id="hiddenFile" name="id" />
+    <button type="submit" class="btn btn-primary" id="btnDownload" style="display:none">Download</button>
+}
+
+<script>
+    var type = 'DeliveryDocument';
+    var table = [];
+
+    $(document).ready(function () {
+        $('#documentAttachmentTable').dataTable({
+            "bLengthChange": false,
+            "bInfo": false,
+            "bPaginate": false,
+            "bFilter": false,
+            "paging": false
+        });
+
+        table = deliveryAttachment;
+
+        if (table.length != 0) {
+            $('#documentAttachmentTable').dataTable({
+                "bLengthChange": false,
+                "bInfo": false,
+                "bPaginate": false,
+                "bFilter": false,
+                "paging": false,
+                "destroy": true,
+                "bLengthChange": false,
+                "aaData": table,
+                "columns": [
+                    { "data": "DocName" },
+                    {
+                        "data": "FilePath",
+                        "render": function (data, type, row, meta) {
+                            if (type === 'display') {
+                                data = '<a class="btn btn-primary" onclick="downloadAttachment(' + row.RunningId + ')"><i class="fa fa-download"></i></a>';
+                            }
+                            return data;
+                        }
+                    },
+                    {
+                        "data": "FilePath",
+                        "render": function (data, type, row, meta) {
+                            if (type === 'display') {
+                                data = '<a class="btn btn-danger" onclick="deleteAttachment(' + row.RunningId + ')"><i class="fa fa-trash-o"></i></a>';
+                            }
+                            return data;
+                        }
+                    }
+                ]
+            });
+            countRows();
+        }
+    });
+
+    $(document).ready(function () {
+        $('#btnUpload').click(function () {
+            var MSNoFile1 = "";
+
+            if (window.FormData !== undefined) {
+
+                var fileUpload = $("#documentAttachment").get(0);
+                var files = fileUpload.files;
+                var fileData = new FormData();
+
+                if (files.length == 0) {
+                    alert("Please select a file!")
+                    return false;
+                }
+                else {
+                    addAttachment(type);
+                }
+            }
+            else {
+                alert("FormData is not supported");
+            }
+        });
+    });
+
+    function addAttachment(data) {
+        var fileUpload = $("#documentAttachment").get(0);
+        var files = fileUpload.files;
+        var fileData = new FormData();
+        var UploadType = data;
+
+        var iSize = document.getElementById('documentAttachment').files[0].size / 1024
+        iSize = (Math.round((iSize / 1024) * 100) / 100)
+
+        if (iSize > 25) {
+            alert("Selected file size more than 25 MB!");
+            return false;
+        }
+
+        for (var i = 0; i < files.length; i++) {
+            fileData.append(files[i].name, files[i]);
+        }
+        fileData.append('EnqTypeA', UploadType);
+        runningNo++;
+
+        $.ajax({
+            url: '/Booking/AjaxUploadDeliveryAttachment',
+            type: "POST",
+            contentType: false,
+            processData: false,
+            data: fileData,
+            success: function (Data) {
+                var element = {};
+                element.DocName = Data.DocName;
+                element.RunningId = runningNo;
+                element.FilePath = Data.FilePath;
+                element.ContentType = Data.ContentType;
+                element.UploadType = type;
+                deliveryAttachment.push(element);
+                table = deliveryAttachment;
+
+                $('#documentAttachmentTable').dataTable({
+                    "bLengthChange": false,
+                    "bInfo": false,
+                    "bPaginate": false,
+                    "bFilter": false,
+                    "paging": false,
+                    "destroy": true,
+                    "bLengthChange": false,
+                    "aaData": table,
+                    "columns": [
+                        { "data": "DocName" },
+                        {
+                            "data": "FilePath",
+                            "render": function (data, type, row, meta) {
+                                if (type === 'display') {
+                                    data = '<a class="btn btn-primary" onclick="downloadAttachment(' + row.RunningId + ')"><i class="fa fa-download"></i></a>';
+                                }
+                                return data;
+                            }
+                        },
+                        {
+                            "data": "ContentType",
+                            "render": function (data, type, row, meta) {
+                                if (type === 'display') {
+                                    data = '<a class="btn btn-danger" onclick="deleteAttachment(' + row.RunningId + ')"><i class="fa fa-trash-o"></i></a>';
+                                }
+                                return data;
+                            }
+                        }
+                    ]
+                });
+                countRows();
+            },
+            error: function (errormessage) {
+                alert(errormessage.responseText);
+            }
+        });
+        $("#documentAttachment").val('');
+    }
+
+    function downloadAttachment(runningNo) {
+        var no = runningNo;
+        var DocName, FilePath, ContentType;
+        for (i = 0; i < table.length; i++) {
+            if (table[i].RunningId == no) {
+                DocName = table[i].DocName;
+                FilePath = table[i].FilePath;
+                ContentType = table[i].ContentType;
+            }
+        }
+        var id = 0;
+        var data = { 'DocName': DocName, 'FilePath': FilePath, 'ContentType': ContentType }
+        data = JSON.stringify(data);
+
+        $.ajax({
+            url: '/Booking/StoreDeliveryAttachment',
+            type: "POST",
+            contentType: "application/json; charset=utf-8",
+            data: data,
+            success: function (Data) {
+                id = Data;
+            },
+            error: function (error) {
+                alert(error.responseText);
+            }
+        });
+        $("#hiddenFile").val(id);
+        $("#btnDownload")[0].click();
+    }
+
+    function deleteAttachment(id) {
+        var r = confirm("Are you sure want to delete this file!");
+        if (r == true) {
+            var no = id;
+            for (i = 0; i < table.length; i++) {
+                if (table[i].RunningId == no) {
+                    table.splice(i, 1);
+                }
+            }
+            $('#documentAttachmentTable').dataTable({
+                "bLengthChange": false,
+                "bInfo": false,
+                "bPaginate": false,
+                "bFilter": false,
+                "paging": false,
+                "destroy": true,
+                "bLengthChange": false,
+                "aaData": table,
+                "columns": [
+                    { "data": "DocName" },
+                    {
+                        "data": "FilePath",
+                        "render": function (data, type, row, meta) {
+                            if (type === 'display') {
+                                data = '<a class="btn btn-primary" onclick="downloadAttachment(' + row.RunningId + ')"><i class="fa fa-download"></i></a>';
+                            }
+                            return data;
+                        }
+                    },
+                    {
+                        "data": "ContentType",
+                        "render": function (data, type, row, meta) {
+                            if (type === 'display') {
+                                data = '<a class="btn btn-danger" onclick="deleteAttachment(' + row.RunningId + ')"><i class="fa fa-trash-o"></i></a>';
+                            }
+                            return data;
+                        }
+                    }
+                ]
+            });
+            countRows();
+        }
+    }
+
+    function countRows() {
+        var table = $('#documentAttachmentTable').DataTable();
+        var RowCount = table.rows().count();
+    }
+
+    $('#btnDone').click(function () {
+        totalDeliveryAttchment = deliveryAttachment;
+        for (i = 0; i < totalDeliveryAttchment.length; i++) {
+            var element = {};
+            element.UploadFor = "Vendor Document";
+            element.DocName = totalDeliveryAttchment[i].DocName;
+            element.FilePath = totalDeliveryAttchment[i].FilePath;
+            element.ContentType = totalDeliveryAttchment[i].ContentType;
+            masterDeliveryAttachment.push(element);
+        }
+
+        var data = { 'BN': BookingNo, 'A': masterDeliveryAttachment };
+        data = JSON.stringify(data);
+
+        $.ajax({
+            type: 'post',
+            url: '/Booking/AjaxDeliveryAttachment',
+            data: data,
+            async: false,
+            contentType: "application/json; charset=utf-8",
+            success: function (response) {
+                if (response.Status != 0) {
+                    Swal.fire({
+                        title: 'Success',
+                        text: response.Message,
+                        icon: 'success'
+                    }).then((result) => {
+                        $('#attachmentModal').modal('hide');
+                    });
+                } else {
+                    alert("Please select a file!");
+                }
+            },
+            error: function (err) {
+                alert(err.responseText);
+            }
+        });
+        $("#load").load("/Booking/Documents?BookingNo=" + BookingNo);
+    });
+
+    function isClosed() {
+        $('#attachmentModal').modal('hide');
+        $("#load").load("/Booking/Documents?BookingNo=" + BookingNo);
+    }
+</script>

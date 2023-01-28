@@ -1,0 +1,208 @@
+﻿
+@{
+    ViewBag.Title = "Vehicle Registration";
+    Layout = "~/Views/Shared/_LayoutDashboard.cshtml";
+}
+
+<div id="VehicleEntry">
+    <div class="page-header">
+        <h4 class="page-title">Vehicle Registration</h4>
+        <button class="btn btn-primary" title="Summary" data-toggle="tooltip" data-placement="bottom" onclick="ShowSummary()"><i class="fa fa-file"></i></button>
+    </div>
+    <div class="card">
+        <div class="card-body">
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-2">
+                        <label class="form-label mt-1">Vehicle No :</label>
+                    </div>
+                    <div class="col-2">
+                        @Html.TextBox("VehicleNumber", null, new { @class = "form-control", @id = "vehicleNumber", name = "vehicleNumber", autocomplete = "off" })
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-2">
+                        <label class="form-label mt-1">Year Of Manufacture :</label>
+                    </div>
+                    <div class="col-2">
+                        @Html.TextBox("YOM", null, new { @class = "form-control", @id = "yom", name = "yom", autocomplete = "off" })
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-2">
+                        <label class="form-label mt-1">Vehicle Model :</label>
+                    </div>
+                    <div class="col-2">
+                        @Html.DropDownList("VehicleModel", (IEnumerable<SelectListItem>)ViewBag.VehicleModel, "--Select--", new { @class = "form-control custom-select", @id = "vehicleModel", name = "vehicleModel", autocomplete = "off" })
+                    </div>
+                </div>
+            </div>
+
+            <p class="mt-5">By submiting these vehicle details you confirm that your vehicle is fit for transport purposes according to the Government's Rules and Regulations.</p>
+
+            <div class="form-group">
+                @Html.CheckBox("IsActive", false, new { @id = "isActive", name = "isActive", autocomplete = "off" })
+                <label>
+                    Accept Terms and Conditions
+                </label>
+            </div>
+
+            <div class="form-group">
+                <button class="btn btn-success" title="Save" data-toggle="tooltip" data-placement="bottom" onclick="vehicleRegistration()"><i class="fa fa-save"></i></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="VehicleSummary">
+    <div class="page-header">
+        <h4 class="page-title">Vehicle Summary</h4>
+        <button class="btn btn-primary" title="Back" data-toggle="tooltip" data-placement="bottom" onclick="ShowEntry()"><i class="fa fa-arrow-left"></i></button>
+    </div>
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="th_Background table table-striped table-bordered text-center text-nowrap" style="width:100%" id="tblSummary">
+                    <thead class="bg-primary">
+                        <tr>
+                            <th>Vehicle Number</th>
+                            <th>Year of Manufacture</th>
+                            <th>Vehicle Model</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var VehicleId = 0;
+    var VehicleNo = "0";
+
+    $(document).ready(function () {
+        load();
+        $("#VehicleSummary").hide();
+    });
+
+    function vehicleRegistration() {
+        var basicElement = {};
+        basicElement.VehicleId = VehicleId;
+         basicElement.VehicleNo = VehicleNo;
+        basicElement.VehicleNumber = $("#vehicleNumber").val();
+        basicElement.YOM = $("#yom").val();
+        basicElement.VehicleModel = $("#vehicleModel").val();
+        basicElement.IsActive = $("#isActive").val();
+
+        if (basicElement.VehicleNumber == "") {
+            Swal.fire({
+                title: 'Error',
+                text: "Please Select vehicle no",
+                icon: 'error'
+            });
+            return false;
+        }
+        if (basicElement.YOM == "") {
+            Swal.fire({
+                title: 'Error',
+                text: "Please select year of manufacture",
+                icon: 'error'
+            });
+            return false;
+        }
+        if (basicElement.VehicleModel == "") {
+            Swal.fire({
+                title: 'Error',
+                text: "Please enter vehicle model",
+                icon: 'error'
+            });
+            return false;
+        }
+        if (basicElement.IsActive == "") {
+            Swal.fire({
+                title: 'Error',
+                text: "Please accept terms and conditions",
+                icon: 'error'
+            });
+            return false;
+        }
+
+        var data = { 'VD': basicElement };
+        data = JSON.stringify(data);
+
+        $.ajax({
+            type: 'post',
+            url: '/Vehicle/AjaxVehicleRegistration',
+            data: data,
+            async: false,
+            contentType: "application/json; charset=utf-8",
+            success: function (response) {
+                if (response.Status != 0) {
+                    Swal.fire({
+                        title: 'Success',
+                        text: response.Message,
+                        icon: 'success'
+                    }).then((result) => {
+                        document.location = '@Url.Action("VehicleRegistration", "Vehicle")';
+                    });
+                } else {
+                    Swal.fire({
+                        title: 'Error',
+                        text: response.Message,
+                        icon: 'error'
+                    })
+                }
+            },
+            error: function (err) {
+                alert(err.responseText);
+            }
+        });
+    }
+
+    function load() {
+        $.ajax({
+            url: "/Vehicle/GetVehicles",
+            type: "POST",
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (response) {
+                $('#tblSummary').DataTable({
+                    "destroy": true,
+                    "bLengthChange": false,
+                    "aaData": response,
+                    "bPaginate": true,
+                    "pageLength": 25,
+                    "bInfo": true,
+                    "paging": true,
+                    order: [],
+                    "searching": true,
+                    "columns": [
+                        { "data": "VehicleNumber" },
+                        { "data": "YOM" },
+                        { "data": "VehicleModel" }
+                    ],
+                    mark: true
+                });
+            },
+            error: function (error) {
+                alert(error.responseText);
+            }
+        });
+    }
+
+    function ShowSummary() {
+        $("#VehicleEntry").hide();
+        $("#VehicleSummary").show();
+    }
+
+    function ShowEntry() {
+        $("#VehicleSummary").hide();
+        $("#VehicleEntry").show();
+    }
+</script>

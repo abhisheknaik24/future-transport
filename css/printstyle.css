@@ -1,0 +1,91 @@
+﻿#tblthead {
+    text-align: center ;
+    background-color: #810bdb;
+    color: white;
+    font-family: monospace;
+}
+
+body {
+    color: black;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+.clearfix::after {
+    content: "";
+    clear: both;
+    display: table;
+}
+
+.box {
+    float: left;
+    width: 100%;
+    padding: 0px;
+}
+
+.boxHeaderL {
+    float: left;
+    width: 30%;
+    padding: 0px;
+    text-align: left;
+}
+
+.boxHeaderR {
+    float: left;
+    width: 70%;
+    padding: 0px;
+    text-align: center;
+}
+
+.tblBox {
+    border-collapse: collapse;
+    width:100%;
+    padding:0px;
+    float:left;
+}
+
+.headingh3 {
+    font-size: 14pt;
+    font-family: 'verdana(batlic)';
+    padding:2px;
+    text-decoration:underline;
+}
+
+th {
+    border: 1px solid black;
+    font-size: 14px;
+    font-family: verdana(batlic);
+    background-color: #ede5e5;
+}
+
+td {
+    border: 1px solid #c1b9b9;
+    font-size: 12px;
+    font-family: 'Segoe UI';
+}
+
+.innerBoxSize {
+    font-size: 15pt;
+    font-family: 'Segoe UI';
+    padding: 5px;
+}
+
+h3 {
+    font-size: 14pt;
+    font-family: 'verdana(batlic)';
+}
+
+.buttomMargin {
+    margin-bottom: -20px;
+    padding-bottom: 0px;
+}
+.footer {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    color: white;
+    text-align: center;
+}

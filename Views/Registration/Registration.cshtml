@@ -1,0 +1,534 @@
+﻿@model FutureTransportEntities.BusinessEntities.LoginEntites
+
+@{
+    ViewBag.Title = "Registration";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    hr.dividerUpper {
+        margin-top: 0em;
+        margin-bottom: 0em;
+        border-width: 2px;
+    }
+
+    hr.dividerLower {
+        margin-top: 5px;
+        margin-bottom: 10px;
+        border-width: 2px;
+    }
+
+    label.hrLabel {
+        margin-top: 5px;
+        margin-bottom: 5px;
+        padding: 0;
+        height: 5px;
+    }
+
+    .table thead th, .text-wrap table thead th {
+        background-color: #9f78ff;
+        color: white;
+    }
+
+    .table td {
+        text-align: right !important;
+    }
+
+        .table td:first-child {
+            text-align: left !important;
+        }
+
+
+    body {
+        font-weight: bolder !important;
+    }
+
+    .required {
+        color: red;
+    }
+</style>
+
+<div class="app-header1 header py-2 d-flex">
+    <div class="container-fluid">
+        <div class="container-fluid">
+            <div class="d-flex">
+                <button class="btn btn-primary rounded-circle" title="Back" data-toggle="tooltip" data-placement="bottom" onclick="GetBack()"><i class="fa fa-arrow-left"></i></button>
+                <h4 class="page-title mt-1 ml-2 text-white">Registration</h4>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="tracker-loader" style="display: none;"></div>
+
+<div class="row" id="Summary">
+    <div class="col-sm-12 col-lg-12">
+        <div class="card wow zoomIn" data-wow-duration="1s" data-wow-delay="0.2s">
+            <div class="card-body">
+                <h4 class="form-title" style=" border-bottom: 1px solid #e3ebf3; color: #6e7687;"><span>BASIC INFORMATION</span></h4>
+                <div class="row">
+                    <div class="col-sm-3 col-lg-3 col-md-3">
+                        <div class="form-group">
+                            <label class="form-label">Email ID <span class="required">*</span></label>
+                            <input type="email" id="EmailId" class="form-control" autocomplete="off" placeholder="" maxlength="100" required="required" />
+                        </div>
+                    </div>
+                    <div class="col-sm-1 col-lg-1 col-md-1">
+                        <div class="form-group" style="padding-top:20px;">
+                            <label class="form-label"></label>
+                            <button class="btn btn-purple btn-xs" id="VerifyEmail" title="Verify" data-toggle="tooltip" data-placement="bottom">Verify</button>
+                        </div>
+                    </div>
+                    <div class="col-sm-4 col-lg-4 col-md-4">
+                        <div class="form-group">
+                            <label class="form-label">Contact No <span class="required">*</span></label>
+                            <input type="tel" id="ContactNo" class="form-control" autocomplete="off" placeholder="" maxlength="10" onkeypress="return restrictAlphabets(event);" pattern="[789][0-9]{9}" required="required" />
+                        </div>
+                    </div>
+                    <div class="col-sm-4 col-lg-4 col-md-4">
+                        <div class="form-group">
+                            <label class="form-label">Registration Type <span class="required">*</span></label>
+                            <select class="form-control" id="Department">
+                                <option value="">--Select--</option>
+                                <option value="customer">Customer</option>
+                                <option value="vendor">Vendor</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <h4 class="form-title" style="border-bottom: 1px solid #e3ebf3;color: #6e7687;"><span>PERSONAL DETAILS</span></h4>
+                <div class="row">
+                    <div class="col-sm-4 col-lg-4 col-md-4">
+                        <div class="form-group">
+                            <label class="form-label">Name <span class="required">*</span></label>
+                            @Html.TextBox("PersonName", null, new { @class = "form-control", @id = "PersonName", name = "PersonName", autocomplete = "off", placeholder = "", @maxlength = 100 })
+                        </div>
+                    </div>
+                    <div class="col-sm-4 col-lg-4 col-md-4">
+                        <div class="form-group">
+                            <label class="form-label">Designation <span class="required">*</span></label>
+                            @Html.TextBox("Designation", null, new { @class = "form-control", @id = "Designation", name = "Designation", autocomplete = "off" })
+                        </div>
+                    </div>
+                    <div class="col-sm-4 col-lg-4 col-md-4">
+                        <div class="form-group">
+                            <label class="form-label">Mobile No <span class="required">*</span></label>
+                            @Html.TextBox("MobileNo", null, new { @class = "form-control", @id = "MobileNo", name = "MobileNo", autocomplete = "off", placeholder = "", @maxlength = 10 })
+                        </div>
+                    </div>
+                    <div class="col-sm-4 col-lg-4 col-md-4">
+                        <div class="form-group">
+                            <label class="form-label">Email <span class="required">*</span></label>
+                            <input type="email" id="Email" class="form-control" autocomplete="off" placeholder="" maxlength="100" />
+                        </div>
+                    </div>
+                    <div class="col-sm-4 col-lg-4 col-md-4">
+                        <div class="form-group">
+                            <label class="form-label">Username <span class="required">*</span></label>
+                            @Html.TextBox("Username", null, new { @class = "form-control", @id = "Username", name = "Username", autocomplete = "off", placeholder = "", @maxlength = 100 })
+                        </div>
+                    </div>
+                </div>
+
+                <h4 class="form-title" style="border-bottom: 1px solid #e3ebf3;color: #6e7687;"><span>ADDRESS INFORMATION</span></h4>
+                <div class="row">
+                    <div class="col-sm-8 col-lg-8 col-md-8">
+                        <div class="form-group">
+                            <label class="form-label">Address <span class="required">*</span></label>
+                            @Html.TextBox("Address", null, new { @class = "form-control", @id = "Address", name = "Address", autocomplete = "off", placeholder = "", @maxlength = 100 })
+                        </div>
+                    </div>
+
+                    <div class="col-sm-4 col-lg-4 col-md-4">
+                        <div class="form-group">
+                            <label class="form-label">State <span class="required">*</span></label>
+                            @Html.TextBox("State", null, new { @class = "form-control", @id = "State", name = "State", autocomplete = "off", placeholder = "", @maxlength = 100 })
+                        </div>
+                    </div>
+                    <div class="col-sm-4 col-lg-4 col-md-4">
+                        <div class="form-group">
+                            <label class="form-label">City <span class="required">*</span></label>
+                            @Html.TextBox("City", null, new { @class = "form-control", @id = "City", name = "City", autocomplete = "off", placeholder = "", @maxlength = 100 })
+                        </div>
+                    </div>
+                    <div class="col-sm-4 col-lg-4 col-md-4">
+                        <div class="form-group">
+                            <label class="form-label">Pin Code <span class="required">*</span></label>
+                            @Html.TextBox("PinCode", null, new { @class = "form-control", @id = "PinCode", name = "PinCode", autocomplete = "off", placeholder = "", @maxlength = 7 })
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-footer">
+                <div class="pull-left">
+                    <a class="btn btn-success btn-xs" title="Save" data-toggle="tooltip" data-placement="bottom" onclick="SaveRegistrationDetails()" id="SaveKYC" style="color:white;"><i class="fa fa-save"></i></a>
+                    <a class='btn btn-success' style="align-content:center;color:white;float:right;margin-left: 10px;" id='add-row' title="Add" data-toggle="tooltip" data-placement="bottom"><i class="fa fa-plus"></i> </a>
+                </div>
+                <div class="pull-right">
+                    <button class="btn btn-secondary" title="Clear" data-toggle="tooltip" data-placement="bottom" onclick="Clear()"><i class="fa fa-undo"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="EmailOTPModal" tabindex="-1" role="dialog" aria-labelledby="smallModal" aria-hidden="true">
+    <div class="modal-dialog modal-sm " role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="smallModal1">Please Enter OTP</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col">
+                        @Html.TextBox("EmailOTP", null, new { @class = "form-control", @id = "EmailOTP", @name = "EmailOTP", autocomplete = "off", placeholder = "Enter OTP" })
+                    </div>
+                </div>
+                <hr style="margin-top:10px;margin-bottom:10px;" />
+                <div class="row">
+                    <div class="col-12">
+                        <button class="btn btn-primary btn-block" id="btnVerifyOtp" onclick="VerifyEmailOTP()" data-dismiss="modal">Submit</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function GetBack() {
+        document.location = '@Url.Action("Index", "Home")';
+    }
+
+    $("#EmailId").on("change", function () {
+        var EI = $("#EmailId").val();
+        var regex = /^([\w-\.]+@@([\w-]+\.)+[\w-]{2,4})?$/;
+        var resultEmailId = regex.test(EI);
+        $("#EmailId").removeClass();
+        if (EI == "") {
+            alert('Please Enter Email Id!');
+            $("#EmailId").addClass("form-control is-invalid state-invalid")
+            return false;
+        }
+        if (resultEmailId == false) {
+            alert('Please Enter valid Email Id!');
+            $("#EmailId").addClass("form-control is-invalid state-invalid")
+            return resultEmailId;
+        }
+        else {
+            $("#EmailId").addClass("form-control is-valid state-valid")
+        }
+    });
+
+    function restrictAlphabets(e) {
+        var x = e.which || e.keycode;
+        if ((x >= 48 && x <= 57)) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
+    $("#PinCode").on("change", function () {
+        var PC = $("#PinCode").val();
+        var checkPincode = /^\d{6}$/;
+        var resultPincode= checkPincode.test(PC);
+        $("#PinCode").removeClass();
+        if (resultPincode == false) {
+            alert("Pin code should be 6 digits ");
+            $("#PinCode").addClass("form-control is-invalid state-invalid")
+            return resultPincode;
+        }
+        else {
+            $("#PinCode").addClass("form-control is-valid state-valid")
+        }
+    });
+
+    $("#Email").on("change", function () {
+        var E = $("#Email").val();
+        var reg = /^([\w-\.]+@@([\w-]+\.)+[\w-]{2,4})?$/;
+        var resultEmail = reg.test(E);
+        $("#Email").removeClass();
+        if (E == "") {
+            alert('Please Enter Email Id!');
+            $("#Email").addClass("form-control is-invalid state-invalid")
+            return false;
+        }
+        if (resultEmail == false) {
+            alert('Please Enter valid Email Id!');
+            $("#Email").addClass("form-control is-invalid state-invalid")
+            return resultEmail;
+        }
+        else {
+            $("#Email").addClass("form-control is-valid state-valid")
+        }
+    });
+
+    $("#VerifyEmail").on('click', function (e) {
+        e.preventDefault();
+
+        var OTP = GenerateOTP();
+
+        var EmailId = $("#EmailId").val();
+        if (EmailId == "") {
+            Swal.fire({
+                title: 'Error',
+                text: "Please enter email.",
+                icon: 'error'
+            });
+            $("#EmailId").addClass("border border-danger");
+            return false;
+        }
+        else {
+            var CustomerMsg = "Hello, OTP for registration is " + OTP + "";
+            var data = {
+                'EmailId': EmailId, 'OTP': OTP, 'CustomerMsg': CustomerMsg
+            };
+            data = JSON.stringify(data);
+
+            $.ajax({
+                url: "/Registration/SendEmail",
+                type: "POST",
+                data: data,
+                contentType: "application/json; charset=utf-8",
+                datatype: "json",
+                success: function (response) {
+                    $("#EmailOTPModal").modal("show");
+                },
+                error: function (error) {
+                }
+            })
+        }
+    });
+
+    function GenerateOTP() {
+        var digits = '0123456789';
+        var otpLength = 4;
+        var otp = '';
+        for (let i = 1; i <= otpLength; i++) {
+            var index = Math.floor(Math.random() * (digits.length));
+            otp = otp + digits[index];
+        }
+        return otp;
+    }
+
+    function VerifyEmailOTP() {
+        var OTP = $("#EmailOTP").val();
+        var dataEmail = { 'OTP': OTP };
+        data = JSON.stringify(dataEmail);
+
+        $.ajax({
+            url: "/Registration/VerifyOTPEmail",
+            data: data,
+            type: "POST",
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (jsonResult) {
+                if (JSON.stringify(jsonResult) == "[]") {
+                    $("#btnVerifyEmail").text("UnVerified");
+                    $("#btnVerifyEmail").removeClass("btn btn-purple btn-xs");
+                    $("#btnVerifyEmail").addClass("btn btn-danger btn-xs");
+                    $("#btnVerifyEmail").attr("disabled", true);
+                }
+                else {
+                    $("#lblIsVerified").hide();
+                    $("#btnVerifyEmail").text("Verified");
+                    $("#btnVerifyEmail").removeClass("btn btn-purple btn-xs");
+                    $("#btnVerifyEmail").addClass("btn btn-success btn-xs");
+                    $("#btnVerifyEmail").attr("disabled", true);
+                    $("#EmailId").attr("readonly", true);
+                }
+            },
+            error: function (error) {
+                let str = error.responseText;
+                var a = str.indexOf("<title>") + 7;
+                var b = str.indexOf("</title>");
+                str = str.substring(a, b);
+                alert("Something went wrong: " + str);
+            }
+        });
+    }
+
+    function SaveRegistrationDetails() {
+        var table = [];
+        var EmailId = document.getElementById('EmailId').value;
+        if (EmailId == "") {
+            Swal.fire({
+                title: 'Error',
+                text: "Please enter email.",
+                icon: 'error'
+            });
+            $("#EmailId").addClass("border border-danger");
+            return false;
+        }
+        var ContactNo = document.getElementById('ContactNo').value;
+        if (ContactNo == "") {
+            Swal.fire({
+                title: 'Error',
+                text: "Please enter contact.",
+                icon: 'error'
+            });
+            $("#ContactNo").addClass("border border-danger");
+            return false;
+        }
+        var Department = document.getElementById('Department').value;
+        if (Department == "") {
+            Swal.fire({
+                title: 'Error',
+                text: "Please enter department.",
+                icon: 'error'
+            });
+            $("#Department").addClass("border border-danger");
+            return false;
+        }
+        var PersonName = document.getElementById('PersonName').value;
+        if (PersonName == "") {
+            Swal.fire({
+                title: 'Error',
+                text: "Please enter person name.",
+                icon: 'error'
+            });
+            $("#PersonName").addClass("border border-danger");
+            return false;
+        }
+        var Designation = document.getElementById('Designation').value;
+        if (Designation == "") {
+            Swal.fire({
+                title: 'Error',
+                text: "Please enter designation.",
+                icon: 'error'
+            });
+            $("#Designation").addClass("border border-danger");
+            return false;
+        }
+        var MobileNo = document.getElementById('MobileNo').value;
+        if (MobileNo == "") {
+            Swal.fire({
+                title: 'Error',
+                text: "Please enter mobile no.",
+                icon: 'error'
+            });
+            $("#MobileNo").addClass("border border-danger");
+            return false;
+        }
+        var Email = document.getElementById('Email').value;
+        if (Email == "") {
+            Swal.fire({
+                title: 'Error',
+                text: "Please enter email.",
+                icon: 'error'
+            });
+            $("#Email").addClass("border border-danger");
+            return false;
+        }
+        var Username = document.getElementById('Username').value;
+        if (Username == "") {
+            Swal.fire({
+                title: 'Error',
+                text: "Please enter username.",
+                icon: 'error'
+            });
+            $("#Username").addClass("border border-danger");
+            return false;
+        }
+        var Address = document.getElementById('Address').value;
+        if (Address == "") {
+            Swal.fire({
+                title: 'Error',
+                text: "Please enter address.",
+                icon: 'error'
+            });
+            $("#Address").addClass("border border-danger");
+            return false;
+        }
+        var State = document.getElementById('State').value;
+        if (State == "") {
+            Swal.fire({
+                title: 'Error',
+                text: "Please enter state.",
+                icon: 'error'
+            });
+            $("#State").addClass("border border-danger");
+            return false;
+        }
+        var City = document.getElementById('City').value;
+        if (City == "") {
+            Swal.fire({
+                title: 'Error',
+                text: "Please enter city.",
+                icon: 'error'
+            });
+            $("#City").addClass("border border-danger");
+            return false;
+        }
+        var PinCode = document.getElementById('PinCode').value;
+        if (PinCode == "") {
+            Swal.fire({
+                title: 'Error',
+                text: "Please enter pin code.",
+                icon: 'error'
+            });
+            $("#PinCode").addClass("border border-danger");
+            return false;
+        }
+
+        table.push({
+            'EmailId': EmailId, 'ContactNo': ContactNo,
+            'Department': Department, 'PersonName': PersonName,
+            'Designation': Designation, 'MobileNo': MobileNo,
+            'Email': Email, 'Address': Address, 'State': State,
+            'City': City, 'PinCode': PinCode
+        });
+
+        var data = { 'RD': table, 'EmailId': EmailId, 'ContactNo': ContactNo, 'Username': Username, 'Department': Department };
+        data = JSON.stringify(data);
+
+        $.ajax({
+            url: "/Registration/SaveRegistrationDetails",
+            data: data,
+            type: "POST",
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (response) {
+                if (response.Status != 0) {
+                    Swal.fire({
+                        title: 'Success',
+                        text: response.Message,
+                        icon: 'success'
+                    }).then((result) => {
+                        document.location = '@Url.Action("Index", "Home")';
+                    });
+                } else {
+                    Swal.fire({
+                        title: 'Error',
+                        text: response.Message,
+                        icon: 'error'
+                    });
+                }
+            },
+            error: function (errormessage) {
+                alert(errormessage.responseText);
+            }
+        });
+    }
+
+    function Clear() {
+        document.getElementById('EmailId').value = "";
+        document.getElementById('ContactNo').value = "";
+        document.getElementById('Department').value = "";
+        document.getElementById('PersonName').value = "";
+        document.getElementById('Designation').value = "";
+        document.getElementById('MobileNo').value = "";
+        document.getElementById('Email').value = "";
+        document.getElementById('Address').value = "";
+        document.getElementById('State').value = "";
+        document.getElementById('City').value = "";
+        document.getElementById('PinCode').value = "";
+    }
+</script>

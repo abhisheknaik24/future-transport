@@ -1,0 +1,128 @@
+﻿
+@{
+    ViewBag.Title = "Live Trips";
+    Layout = "~/Views/Shared/_LayoutDashboard.cshtml";
+}
+
+<div id="LiveTrips">
+    <div class="page-header">
+        <h4 class="page-title">Live Trips</h4>
+    </div>
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="th_Background table table-striped table-bordered text-center text-nowrap" style="width:100%" id="tblSummary">
+                    <thead class="bg-primary">
+                        <tr>
+                            <th>Booking No</th>
+                            <th>Container Size</th>
+                            <th>Container Type</th>
+                            <th>Weight</th>
+                            <th>Container No</th>
+                            <th>Pickup Date</th>
+                            <th>Dropoff Date</th>
+                            <th>Driver</th>
+                            <th>Vehicle</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        Load();
+    });
+
+    $( function() {
+    $( ".datePicker" ).datepicker({
+            autoclose: true,
+            todayHighlight: true,
+            format: 'dd M yyyy',
+            language: "tr",
+            changeMonth: true,
+            changeYear: true,
+        });
+    });
+
+    function Load() {
+        $.ajax({
+            url: "/Booking/GetBookingsLiveTrips",
+            type: "POST",
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (response) {
+                $('#tblSummary').DataTable({
+                    "destroy": true,
+                    "bLengthChange": false,
+                    "aaData": response,
+                    "bPaginate": true,
+                    "pageLength": 25,
+                    "bInfo": true,
+                    "paging": true,
+                    order: [],
+                    "searching": true,
+                    "columns": [
+                        { "data": "BookingNo" },
+                        { "data": "ContainerSize" },
+                        { "data": "ContainerType" },
+                        { "data": "Weight" },
+                        { "data": "ContainerNo" },
+                        { "data": "PickUpDate" },
+                        {
+                            "data": "DropOffDate",
+                            "orderable": false,
+                            "render": function (data, type, row, meta) {
+                                if (type === 'display') {
+                                    if (row.DropOffDate == "") {
+                                        data = "<div class=\"text-center\">-</div>"
+                                    }
+                                    else {
+                                        data = row.DropOffDate
+                                    }
+                                }
+                                return data;
+                            }
+                        },
+                        {
+                            "data": "Driver",
+                            "orderable": false,
+                            "render": function (data, type, row, meta) {
+                                if (type === 'display') {
+                                    if (row.Driver == "") {
+                                        data = "<div class=\"text-center\">-</div>"
+                                    }
+                                    else {
+                                        data = row.Driver
+                                    }
+                                }
+                                return data;
+                            }
+                        },
+                        {
+                            "data": "Vehicle",
+                            "orderable": false,
+                            "render": function (data, type, row, meta) {
+                                if (type === 'display') {
+                                    if (row.Vehicle == "") {
+                                        data = "<div class=\"text-center\">-</div>"
+                                    }
+                                    else {
+                                        data = row.Vehicle
+                                    }
+                                }
+                                return data;
+                            }
+                        }
+                    ],
+                    mark: true
+                });
+            },
+            error: function (error) {
+                alert(error.responseText);
+            }
+        });
+    }
+</script>

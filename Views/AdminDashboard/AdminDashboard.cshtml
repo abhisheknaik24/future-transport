@@ -1,0 +1,95 @@
+﻿@{
+    ViewBag.Title = "Admin Dashboard";
+    Layout = "~/Views/Shared/_LayoutDashboard.cshtml";
+}
+
+<div class="page-header">
+    <h4 class="page-title">Dashboard</h4>
+</div>
+<div class="card">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-lg-4 col-sm-12">
+                <canvas id="myChart" width="300" height="200"></canvas>
+            </div>
+            <div class="col-lg-6 col-sm-12">
+                <h4 class="page-title" style="margin-left:200px;" id="Month"></h4>
+                <div class="card randomColor" style="cursor: pointer; margin-top: 50px; margin-left: 50px;">
+                    <div class="card-body" style="padding:50px;">
+                        <h2 class="text-white mt-0" id="BookingsAccpted"></h2>
+                        <h2 class="text-white" id="BookingsReadyToAccept"></h2>
+                        <h2 class="text-white mb-0" id="BookingsRejected"></h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        var colors = ['#6f6456', '#cddc49', '#cb7e94', '#e94b30', '#fee659', '#a1cfdd', '#01c5c4', '#b8de6f', '#f39233', '#c56183', '#b2deec', '#28abb9', '#2d6187', '#cc0e74'];
+        Array.prototype.getRandom = function (cut) {
+            var i = Math.floor(Math.random() * this.length);
+            if (cut && i in this) {
+                return this.splice(i, 1)[0];
+            }
+            return this[i];
+        }
+        $('.randomColor').each(function () {
+            var color = colors.getRandom();
+            $(this).css("background", color);
+        });
+
+        var month = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+        var d = new Date();
+        var name = month[d.getMonth()];
+        $("#Month").html(name + " Month Records");
+
+        GetContainerInOutPieChart();
+    });
+
+    function GetContainerInOutPieChart() {
+        $.ajax({
+            type: 'POST',
+            url: '/AdminDashboard/GetAdminDashboard',
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (jsonResult) {
+                var MonthValue = [];
+                for (var i = 0; i < jsonResult.length; i++) {
+                    MonthValue.push(jsonResult[i].Counts);
+                }
+
+                $("#BookingsAccpted").html("Bookings Accpted : " + MonthValue[0]);
+                $("#BookingsReadyToAccept").html("Bookings Ready to Accept : " + MonthValue[1]);
+                $("#BookingsRejected").html("Bookings Rejected : " + MonthValue[2]);
+
+                var ctx = document.getElementById('myChart').getContext('2d');
+                var myChart = new Chart(ctx, {
+                    type: 'pie',
+                    data: {
+                        labels: ['Bookings accpted', 'Bookings ready to accept', 'Bookings rejected'],
+                        datasets: [{
+                            label: 'Counts',
+                            data: MonthValue,
+                            backgroundColor: [
+                                'rgb(54, 162, 235)',
+                                'rgb(255, 205, 86)',
+                                'rgb(255, 99, 132)'
+                            ],
+                            hoverOffset: 4
+                        }]
+                    },
+                    options: {
+                        responsive: true
+                    }
+                });
+            },
+            error: function (errormessage) {
+                alert(errormessage.responseText);
+            }
+        });
+    }
+</script>

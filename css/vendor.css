@@ -1,0 +1,22 @@
+﻿body {
+}
+.vendor_wrap tr td,
+.vendor_wrap tr th {
+    padding: 0 15px 0 0px;
+}
+.display_grid{
+    display: grid;
+}
+
+.visit_wrap {
+    padding: 0 5px;
+    text-align: center;
+}
+
+.visit_wrap a{
+    width: 100%;
+}
+
+.visit_wrap i{
+    vertical-align: inherit;
+}

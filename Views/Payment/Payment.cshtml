@@ -1,0 +1,57 @@
+﻿
+@{
+    ViewBag.Title = "Payment";
+    Layout = "~/Views/Shared/_LayoutDashboard.cshtml";
+}
+
+<div id="BookingSummary">
+    <div class="page-header">
+        <h4 class="page-title">Payment</h4>
+        <button class="btn btn-primary" title="Back" data-toggle="tooltip" data-placement="bottom" onclick="ShowEntry()"><i class="fa fa-arrow-left"></i></button>
+    </div>
+    <div class="card">
+        <div class="card-body">
+            <div class="row no-gutters mt-5">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <div class="row no-gutters">
+                            <div class="col-md-5">
+                                <label class="form-label mt-2">Shipment Type :</label>
+                            </div>
+                            <div class="col-md-5">
+                                <select id="ShipmentTypeS" class="form-control">
+                                    <option value="Import">Import</option>
+                                    <option value="Export">Export</option>
+                                    <option value="0" selected>Both</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <button class="btn btn-warning" title="Search" data-toggle="tooltip" data-placement="bottom" onclick="Load()"><i class="fa fa-search"></i></button>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="th_Background table table-striped table-bordered text-center text-nowrap" style="width:100%" id="tblSummary">
+                    <thead class="bg-primary">
+                        <tr>
+                            <th>Action</th>
+                            <th>Booking No</th>
+                            <th>Best Rate</th>
+                            <th>Booking Date & Time</th>
+                            <th>Plan Date</th>
+                            <th>20</th>
+                            <th>40</th>
+                            <th>45</th>
+                            <th>Pickup Location</th>
+                            <th>Dropoff Location</th>
+                            <th>Time (of BID)</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,280 @@
+﻿<div id="refresh">
+    <div class="page-header">
+        <h4 class="page-title">Booking Details</h4>
+        <ol class="breadcrumb" id="IsDirect">
+            <li class="breadcrumb-item">
+                <a onclick="GetBack()" class="btn btn-primary btn-primary text-right" style="align-content:center;color:white" title="Back" data-toggle="tooltip" data-placement="bottom">
+                    <i class="fa fa-arrow-left"></i>
+                </a>
+            </li>
+        </ol>
+    </div>
+    <div class="card">
+        <div class="card-body">
+            <div class="row mt-5">
+                <div class="col-6">
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-4">
+                                <label class="form-label mt-1">Booking No :</label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-4">
+                                @Html.TextBox("BookingNo", null, new { @class = "form-control", @id = "BookingNo", name = "BookingNo", @Value = @ViewBag.BookingNo, @readonly = "readonly" })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="th_Background table table-striped table-bordered text-center text-nowrap" style="width:100%" id="tblDetailsSummary">
+                    <thead class="bg-primary">
+                        <tr>
+                            <th>Container Size</th>
+                            <th>Container Type</th>
+                            <th>Weight</th>
+                            <th>Container No</th>
+                            <th>Pickup Date</th>
+                            <th>Driver</th>
+                            <th>Vehicle</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+
+            <div class="modal" id="modalDriver" tabindex="-1" role="dialog">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <label class="form-label font-weight-bold mt-1">Select driver :</i></label>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            @Html.DropDownList("DriverDropdown", (IEnumerable<SelectListItem>)ViewBag.DriverDropdown, "--Select--", new { @class = "form-control custom-select", @id = "DriverDropdown", name = "DriverDropdown", autocomplete = "off" })
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-success" id="isSelectedDriver" title="Save" data-toggle="tooltip" data-placement="bottom"><i class="fa fa-save"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal" id="modalVehicle" tabindex="-1" role="dialog">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <label class="form-label font-weight-bold mt-1">Select vehicle :</i></label>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            @Html.DropDownList("VehicleDropdown", (IEnumerable<SelectListItem>)ViewBag.VehicleDropdown, "--Select--", new { @class = "form-control custom-select", @id = "VehicleDropdown", name = "VehicleDropdown", autocomplete = "off" })
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-success" id="isSelectedVehicle" title="Save" data-toggle="tooltip" data-placement="bottom"><i class="fa fa-save"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var BookingNo = "";
+    var SizeNo = "";
+
+    $(document).ready(function () {
+        BookingNo = "@ViewBag.BookingNo";
+        LoadDetails();
+    });
+
+    function GetBack() {
+        document.location = '@Url.Action("PendingMovements", "Bidding")';
+    }
+
+    function LoadDetails() {
+        var BN = document.getElementById("BookingNo").value;
+
+        var data = { 'BN': BN }
+        data = JSON.stringify(data);
+
+        $.ajax({
+            url: "/Bidding/GetBookingDetails",
+            data: data,
+            type: "POST",
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (response) {
+                ContainerM = response;
+                $('#tblDetailsSummary').DataTable({
+                    "destroy": true,
+                    "bLengthChange": false,
+                    "aaData": response,
+                    "bPaginate": true,
+                    "pageLength": 25,
+                    "bInfo": true,
+                    "paging": true,
+                    order: [],
+                    "searching": true,
+                    "columns": [
+                        { "data": "ContainerSize" },
+                        { "data": "ContainerType" },
+                        { "data": "Weight" },
+                        {
+                            "data": "ContainerNo",
+                            "orderable": false,
+                            "render": function (data, type, row, meta) {
+                                if (type === 'display') {
+                                    if (row.ContainerNo == "") {
+                                        data = "<div class=\"text-center\">-</div>"
+                                    }
+                                    else {
+                                        data = row.ContainerNo
+                                    }
+                                }
+                                return data;
+                            }
+                        },
+                        {
+                            "data": "PickUpDate",
+                            "orderable": false,
+                            "render": function (data, type, row, meta) {
+                                if (type === 'display') {
+                                    if (row.PickUpDate == "") {
+                                        data = "<div class=\"text-center\">-</div>"
+                                    }
+                                    else {
+                                        data = row.PickUpDate
+                                    }
+                                }
+                                return data;
+                            }
+                        },
+                        {
+                            "data": "Driver",
+                            "orderable": false,
+                            "render": function (data, type, row, meta) {
+                                if (type === 'display') {
+                                    if (row.Driver == "") {
+                                        data = "<div class=\"text-center\"><button class=\"btn btn-sm btn-blue\" title=\"Add\" data-toggle=\"tooltip\" data-placement=\"bottom\" onclick=\"SelectDriver('" + row.SizeNo + "')\"><i class=\"fa fa-plus\"></i></button></div>"
+                                    }
+                                    else {
+                                        data = row.Driver
+                                    }
+                                }
+                                return data;
+                            }
+                        },
+                        {
+                            "data": "Vehicle",
+                            "orderable": false,
+                            "render": function (data, type, row, meta) {
+                                if (type === 'display') {
+                                    if (row.Vehicle == "") {
+                                        data = "<div class=\"text-center\"><button class=\"btn btn-sm btn-blue\" title=\"Add\" data-toggle=\"tooltip\" data-placement=\"bottom\" onclick=\"SelectVehicle('" + row.SizeNo + "')\"><i class=\"fa fa-plus\"></i></button></div>"
+                                    }
+                                    else {
+                                        data = row.Vehicle
+                                    }
+                                }
+                                return data;
+                            }
+                        }
+                    ],
+                    mark: true
+                });
+            },
+            error: function (error) {
+                alert(error.responseText);
+            }
+        });
+    }
+
+    function SelectDriver(SN) {
+        $("#modalDriver").modal('show');
+        SizeNo = SN;
+    }
+
+    $('#isSelectedDriver').click(function () {
+        var basicElement = {};
+        basicElement.BookingNo = document.getElementById("BookingNo").value;
+        basicElement.SizeNo = SizeNo;
+        basicElement.Driver = $("#DriverDropdown").val();
+
+        var data = { 'SD': basicElement };
+        data = JSON.stringify(data);
+
+        $.ajax({
+            type: 'post',
+            url: '/Bidding/AjaxAddDriver',
+            data: data,
+            async: false,
+            contentType: "application/json; charset=utf-8",
+            success: function (response) {
+                $("#modalDriver").modal('hide');
+                if (response.Status != 0) {
+                    Swal.fire({
+                        title: 'Success',
+                        text: response.Message,
+                        icon: 'success'
+                    }).then((result) => {
+                        $('#refresh').load("/Bidding/BookingDetails?BookingNo=" + BookingNo);
+                    });
+                } else {
+                    alert("Please select a driver!");
+                }
+            },
+            error: function (err) {
+                alert(err.responseText);
+            }
+        });
+    });
+
+    function SelectVehicle(SN) {
+        $("#modalVehicle").modal('show');
+        SizeNo = SN;
+    }
+
+    $('#isSelectedVehicle').click(function () {
+        var basicElement = {};
+        basicElement.BookingNo = document.getElementById("BookingNo").value;
+        basicElement.SizeNo = SizeNo;
+        basicElement.Vehicle = $("#VehicleDropdown").val();
+
+        var data = { 'SV': basicElement };
+        data = JSON.stringify(data);
+
+        $.ajax({
+            type: 'post',
+            url: '/Bidding/AjaxAddVehicle',
+            data: data,
+            async: false,
+            contentType: "application/json; charset=utf-8",
+            success: function (response) {
+                $("#modalVehicle").modal('hide');
+                if (response.Status != 0) {
+                    Swal.fire({
+                        title: 'Success',
+                        text: response.Message,
+                        icon: 'success'
+                    }).then((result) => {
+                        $('#refresh').load("/Bidding/BookingDetails?BookingNo=" + BookingNo);
+                    });
+                } else {
+                    if (basicElement.Vehicle == "") {
+                        alert("Please select a vehicle!");
+                    }
+                }
+            },
+            error: function (err) {
+                alert(err.responseText);
+            }
+        });
+    });
+</script>

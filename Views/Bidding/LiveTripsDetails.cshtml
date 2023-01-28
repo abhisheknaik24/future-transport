@@ -1,0 +1,239 @@
+﻿<div id="refresh">
+    <div class="page-header">
+        <h4 class="page-title">Booking Details</h4>
+        <ol class="breadcrumb" id="IsDirect">
+            <li class="breadcrumb-item">
+                <a onclick="GetBack()" class="btn btn-primary btn-primary text-right" style="align-content:center;color:white">
+                    <i class="fa fa-arrow-left" data-placement="bottom" title="Back"></i>
+                </a>
+            </li>
+        </ol>
+    </div>
+    <div class="card">
+        <div class="card-body">
+            <div class="row mt-5">
+                <div class="col-6">
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-4">
+                                <label class="form-label mt-1">Booking No :</label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-4">
+                                @Html.TextBox("BookingNo", null, new { @class = "form-control", @id = "BookingNo", name = "BookingNo", @Value = @ViewBag.BookingNo, @readonly = "readonly" })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="th_Background table table-striped table-bordered text-center text-nowrap" style="width:100%" id="tblDetailsSummary">
+                    <thead class="bg-primary">
+                        <tr>
+                            <th>Container Size</th>
+                            <th>Container Type</th>
+                            <th>Weight</th>
+                            <th>Container No</th>
+                            <th>Pickup Date</th>
+                            <th>Dropoff Date</th>
+                            <th>Driver</th>
+                            <th>Vehicle</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+
+            <div class="modal" id="modalDropOffDate" tabindex="-1" role="dialog">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row">
+                                <div class="col-4">
+                                    <label class="form-label mt-1">Dropoff Date :</label>
+                                </div>
+                                <div class="col-8">
+                                    @Html.TextBox("UpdateDropOffDate", null, new { @class = "form-control datePicker", @id = "UpdateDropOffDate", name = "UpdateDropOffDate", @Value = DateTime.Now.AddDays(1).ToString("dd MMM yyyy"), @readonly = "readonly" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-success" id="isSelectedDropOffDate">Submit</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var BookingNo = "";
+    var PickUpDate = "";
+
+    $(document).ready(function () {
+        BookingNo = "@ViewBag.BookingNo";
+        LoadDetails();
+    });
+
+    $(function () {
+        $(".datePicker").datepicker({
+            autoclose: true,
+            todayHighlight: true,
+            format: 'dd M yyyy',
+            language: "tr",
+            changeMonth: true,
+            changeYear: true,
+        });
+    });
+
+    function GetBack() {
+        document.location = '@Url.Action("LiveTrips", "Bidding")';
+    }
+
+    function LoadDetails() {
+        var BN = document.getElementById("BookingNo").value;
+
+        var data = { 'BN': BN }
+        data = JSON.stringify(data);
+
+        $.ajax({
+            url: "/Bidding/GetLiveTripsDetails",
+            data: data,
+            type: "POST",
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (response) {
+                $('#tblDetailsSummary').DataTable({
+                    "destroy": true,
+                    "bLengthChange": false,
+                    "aaData": response,
+                    "bPaginate": true,
+                    "pageLength": 25,
+                    "bInfo": true,
+                    "paging": true,
+                    order: [],
+                    "searching": true,
+                    "columns": [
+                        { "data": "ContainerSize" },
+                        { "data": "ContainerType" },
+                        { "data": "Weight" },
+                        { "data": "ContainerNo" },
+                        { "data": "PickUpDate" },
+                        {
+                            "data": "DropOffDate",
+                            "orderable": false,
+                            "render": function (data, type, row, meta) {
+                                if (type === 'display') {
+                                    if (row.DropOffDate == "") {
+                                        data = "<div class=\"text-center\"><button class=\"btn btn-sm btn-blue mt-1\" onclick=\"SelectDropOffDate('" + row.SizeNo + "')\"><i class=\"fa fa-plus\"></i></button></div>"
+                                    }
+                                    else {
+                                        data = row.DropOffDate
+                                    }
+                                }
+                                return data;
+                            }
+                        },
+                        { "data": "Driver" },
+                        { "data": "Vehicle" }
+                    ],
+                    mark: true
+                });
+            },
+            error: function (error) {
+                alert(error.responseText);
+            }
+        });
+    }
+
+    function SelectDropOffDate(SizeNo) {
+        $("#modalDropOffDate").modal('show');
+        var BN = document.getElementById("BookingNo").value;
+        var SN = SizeNo;
+
+        $('#isSelectedDropOffDate').click(function () {
+            var data = { 'BN': BN, 'SN': SN}
+            data = JSON.stringify(data);
+            $.ajax({
+                url: "/Bidding/GetUpdateDate",
+                data: data,
+                type: "POST",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    PickUpDate = response[0].PickUpDate;
+                    var basicElement = {};
+                    basicElement.BookingNo = document.getElementById("BookingNo").value;
+                    basicElement.SizeNo = SizeNo;
+                    basicElement.DropOffDate = document.getElementById("UpdateDropOffDate").value;
+
+                    if (PickUpDate == "") {
+                        alert("Please select pickup date!");
+                        return false;
+                    }
+
+                    if (basicElement.DropOffDate == "") {
+                        alert("Please select dropoff date!");
+                        return false;
+                    }
+
+                    var date1 = new Date(PickUpDate);
+                    var date2 = new Date(basicElement.DropOffDate);
+
+                    if (date1 > date2) {
+                        document.getElementById('UpdateDropOffDate').style.borderColor = "red";
+                        Swal.fire({
+                            title: 'Error',
+                            text: "Dropoff date should not be less than pickup date!",
+                            icon: 'error'
+                        })
+                        return false;
+                    } else {
+                        document.getElementById('UpdateDropOffDate').style.borderColor = "Gainsboro";
+                    }
+
+                    var data = { 'UDD': basicElement };
+                    data = JSON.stringify(data);
+
+                    $.ajax({
+                        url: "/Bidding/AjaxUpdateDropOffBooking",
+                        data: data,
+                        type: "POST",
+                        contentType: "application/json; charset=utf-8",
+                        success: function (response) {
+                            $("#modalDropOffDate").modal('hide');
+                            if (response.Status != 0) {
+                                Swal.fire({
+                                    title: 'Success',
+                                    text: response.Message,
+                                    icon: 'success'
+                                }).then((result) => {
+                                    $('#refresh').load("/Bidding/LiveTripsDetails?BookingNo=" + BookingNo);
+                                });
+                            } else {
+                                Swal.fire({
+                                    title: 'Error',
+                                    text: response.Message,
+                                    icon: 'error'
+                                })
+                            }
+                        },
+                        error: function (err) {
+                            alert(err.responseText);
+                        }
+                    });
+                },
+                error: function (error) {
+                    alert(error.responseText);
+                }
+            });
+        });
+    }
+</script>

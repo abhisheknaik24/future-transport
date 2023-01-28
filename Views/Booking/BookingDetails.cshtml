@@ -1,0 +1,226 @@
+﻿<div id="refresh">
+    <div class="page-header">
+        <h4 class="page-title">Booking Details</h4>
+        <ol class="breadcrumb" id="IsDirect">
+            <li class="breadcrumb-item">
+                <a onclick="GetBack()" class="btn btn-primary btn-primary text-right" style="align-content:center;color:white" title="Back" data-toggle="tooltip" data-placement="bottom">
+                    <i class="fa fa-arrow-left"></i>
+                </a>
+            </li>
+        </ol>
+    </div>
+    <div class="card">
+        <div class="card-body">
+            <div class="row mt-5">
+                <div class="col-6">
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-4">
+                                <label class="form-label mt-1">Booking No :</label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-4">
+                                @Html.TextBox("BookingNo", null, new { @class = "form-control", @id = "BookingNo", name = "BookingNo", @Value = @ViewBag.BookingNo, @readonly = "readonly" })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="th_Background table table-striped table-bordered text-center text-nowrap" style="width:100%" id="tblDetailsSummary">
+                    <thead class="bg-primary">
+                        <tr>
+                            <th>Container Size</th>
+                            <th>Container Type</th>
+                            <th>Weight</th>
+                            <th>Container No</th>
+                            <th>Pickup Date</th>
+                            <th>Driver</th>
+                            <th>Vehicle</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-12 col-md-4">
+                    <button class="target btn btn-success" title="Save" data-toggle="tooltip" data-placement="bottom" onclick="SaveDetails()"><i class="fa fa-save"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var ContainerM = [];
+    var BookingNo = "";
+
+    $(document).ready(function () {
+        BookingNo = "@ViewBag.BookingNo";
+        LoadDetails();
+    });
+
+    function GetBack() {
+        document.location = '@Url.Action("PendingMovements", "Booking")';
+    }
+
+    function LoadDetails() {
+        var BN = document.getElementById("BookingNo").value;
+
+        var data = { 'BN': BN }
+        data = JSON.stringify(data);
+
+        $.ajax({
+            url: "/Booking/GetBookingDetails",
+            data: data,
+            type: "POST",
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (response) {
+                ContainerM = response;
+                $('#tblDetailsSummary').DataTable({
+                    "destroy": true,
+                    "bLengthChange": false,
+                    "aaData": response,
+                    "bPaginate": true,
+                    "pageLength": 25,
+                    "bInfo": true,
+                    "paging": true,
+                    order: [],
+                    "searching": true,
+                    "columns": [
+                        { "data": "ContainerSize" },
+                        { "data": "ContainerType" },
+                        { "data": "Weight" },
+                        {
+                            "data": "ContainerNo",
+                            "orderable": false,
+                            "render": function (data, type, row, meta) {
+                                if (type === 'display') {
+                                    if (row.ContainerNo == "") {
+                                        data = "<div class=\"text-center\"><input type=\"text\" class=\"from-control\" id=\"ContainerNo" + row.SizeNo + "\" onchange=\"GetData('" + row.SizeNo + "')\" size=\"30\"/></div>"
+                                    }
+                                    else {
+                                        data = row.ContainerNo
+                                    }
+                                }
+                                return data;
+                            }
+                        },
+                        {
+                            "data": "PickUpDate",
+                            "orderable": false,
+                            "render": function (data, type, row, meta) {
+                                if (type === 'display') {
+                                    if (row.PickUpDate == "") {
+                                        data = "<div class=\"text-center\"><input type=\"text\" class=\"from-control datePicker\" id=\"PickUpDate" + row.SizeNo + "\" onchange=\"GetData('" + row.SizeNo + "')\" size=\"20\"/></div>"
+                                    }
+                                    else {
+                                        data = row.PickUpDate
+                                    }
+                                }
+                                return data;
+                            }
+                        },
+                        {
+                            "data": "Driver",
+                            "orderable": false,
+                            "render": function (data, type, row, meta) {
+                                if (type === 'display') {
+                                    if (row.Driver == "") {
+                                        data = "<div class=\"text-center\">-</div>"
+                                    }
+                                    else {
+                                        data = row.Driver
+                                    }
+                                }
+                                return data;
+                            }
+                        },
+                        {
+                            "data": "Vehicle",
+                            "orderable": false,
+                            "render": function (data, type, row, meta) {
+                                if (type === 'display') {
+                                    if (row.Vehicle == "") {
+                                        data = "<div class=\"text-center\">-</div>"
+                                    }
+                                    else {
+                                        data = row.Vehicle
+                                    }
+                                }
+                                return data;
+                            }
+                        }
+                    ],
+                    mark: true
+                });
+                $(".datePicker").datepicker({
+                    autoclose: true,
+                    todayHighlight: true,
+                    format: 'dd M yyyy',
+                    language: "tr",
+                    changeMonth: true,
+                    changeYear: true,
+                });
+            },
+            error: function (error) {
+                alert(error.responseText);
+            }
+        });
+    }
+
+    function GetData(SizeNo) {
+        for (var i = 0; i < ContainerM.length; i++) {
+            if (SizeNo == ContainerM[i].SizeNo) {
+                ContainerM[i].ContainerNo = $("#ContainerNo" + SizeNo).val();
+                ContainerM[i].PickUpDate = $("#PickUpDate" + SizeNo).val();
+            }
+        }
+    }
+
+    function SaveDetails() {
+        var TotalContainerSize = [];
+        for (var i = 0; i < ContainerM.length; i++) {
+            var element = {};
+            element.BookingNo = ContainerM[i].BookingNo;
+            element.SizeNo = ContainerM[i].SizeNo;
+            element.ContainerNo = ContainerM[i].ContainerNo;
+            element.PickUpDate = ContainerM[i].PickUpDate;
+            TotalContainerSize.push(element);
+        }
+
+        var data = { 'CN': TotalContainerSize };
+        data = JSON.stringify(data);
+
+        $.ajax({
+            type: 'post',
+            url: '/Booking/AjaxAddBookingDetails',
+            data: data,
+            async: false,
+            contentType: "application/json; charset=utf-8",
+            success: function (response) {
+                if (response.Status != 0) {
+                    Swal.fire({
+                        title: 'Success',
+                        text: response.Message,
+                        icon: 'success'
+                    }).then((result) => {
+                        $('#refresh').load("/Booking/BookingDetails?BookingNo=" + BookingNo);
+                    });
+                } else {
+                    Swal.fire({
+                        title: 'Error',
+                        text: response.Message,
+                        icon: 'error'
+                    })
+                }
+            },
+            error: function (err) {
+                alert(err.responseText);
+            }
+        });
+    }
+</script>

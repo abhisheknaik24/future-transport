@@ -1,0 +1,100 @@
+﻿@model FutureTransportEntities.BusinessEntities.LoginEntites
+
+@{
+    ViewBag.Title = "Login | Future Transport";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<body class="login-img">
+    <div class="page">
+        @using (Html.BeginForm("Login", "Home", FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+            <div class="page-single">
+                <div class="container">
+                    <div class="row">
+                        <div class="col mx-auto">
+                            <div class="text-center mb-6">
+                            </div>
+                            <div class="row justify-content-center">
+                                <div class="col-md-8">
+                                    <div class="card-group mb-0">
+                                        <div class="card p-2">
+                                            <div class="card-body">
+                                                <h1>Login</h1>
+                                                <p>Sign In to your account</p>
+                                                <div class="input-group mb-3" id="divusername">
+                                                    <span class="input-group-addon"><i class="fa fa-user"></i></span>
+                                                    @Html.EditorFor(model => model.UserName, new { htmlAttributes = new { @class = "form-control", @id = "txtusername", name = "username", placeholder = "Username", autocomplete = "off" } })
+                                                    <div class="invalid-feedback" style="display:none" id="userrequired">User Name is required</div>
+                                                </div>
+                                                <div class="input-group mb-4" id="divpassword">
+                                                    <span class="input-group-addon"><i class="fa fa-lock"></i></span>
+                                                    @Html.EditorFor(model => model.UserPass, new { htmlAttributes = new { @class = "form-control", @id = "txtpassword", name = "password", placeholder = "Password", autocomplete = "off", type = "password" } })
+                                                    <div class="invalid-feedback" style="display:none" id="passwordrequired">Password is required</div>
+                                                </div>
+                                                <span class="text-danger" id="usernameinvalid">@Html.DisplayFor(model => model.LoginErrorMessage)</span>
+                                                <div class="row">
+                                                    <div class="col-12">
+                                                        <label class="custom-control custom-checkbox">
+                                                            @Html.EditorFor(model => model.RemeberMe, new { htmlAttributes = new { @class = "custom-control-input", @id = "rememberme", name = "rememberme", placeholder = "rememberme", autocomplete = "off", type = "checkbox" } })
+                                                            <span class="custom-control-label">Remember Me</span>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-12">
+                                                        <input type="submit" class="btn btn-primary btn-block" id="login" name="login" value="Login" />
+                                                    </div>
+                                                    <div class="col-12">
+                                                        <a href="#" class="btn btn-link box-shadow-0 px-0" onclick="return onService()">Forgot password?</a>
+                                                        <span style="visibility:hidden"> Corrrct Button Space </span>
+                                                        @Html.ActionLink("Register", "Registration", "Registration")
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="card">
+                                            <img src="~/images/admin-loginscreen.jpg" alt="admin-loginscreen" height="100%" width="100%" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <script>
+        $(function () {
+            $('#login').click(function () {
+                var username = document.getElementById('txtusername').value;
+                var password = document.getElementById('txtpassword').value;
+
+                var blResult = Boolean;
+                blResult = true;
+
+                document.getElementById('txtusername').style.borderColor = "Gainsboro";
+                document.getElementById('txtpassword').style.borderColor = "Gainsboro";
+
+                if (username == "") {
+                    document.getElementById('txtusername').style.borderColor = "red"
+                    blResult = blResult && false;
+                }
+                if (password == "") {
+                    document.getElementById('txtpassword').style.borderColor = "red"
+                    blResult = blResult && false;
+                }
+
+                if (blResult == false) { alert('Please fill the required fields!'); }
+                return blResult;
+            });
+        });
+
+        function onService() {
+            alert("Under revision..!");
+        }
+    </script>
+</body>

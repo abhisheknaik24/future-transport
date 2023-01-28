@@ -1,0 +1,99 @@
+﻿<div class="page-header">
+    <h4 class="page-title">Booking Details</h4>
+    <ol class="breadcrumb" id="IsDirect">
+        <li class="breadcrumb-item">
+            <a onclick="GetBack()" class="btn btn-primary btn-primary text-right" style="align-content:center;color:white">
+                <i class="fa fa-arrow-left" data-placement="bottom" title="Back"></i>
+            </a>
+        </li>
+    </ol>
+</div>
+<div class="card">
+    <div class="card-body">
+        <div class="row mt-5">
+            <div class="col-6">
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-4">
+                            <label class="form-label mt-1">Booking No :</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-4">
+                            @Html.TextBox("BookingNo", null, new { @class = "form-control", @id = "BookingNo", name = "BookingNo", @Value = @ViewBag.BookingNo, @readonly = "readonly" })
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="th_Background table table-striped table-bordered text-center text-nowrap" style="width:100%" id="tblDetailsSummary">
+                <thead class="bg-primary">
+                    <tr>
+                        <th>Container Size</th>
+                        <th>Container Type</th>
+                        <th>Weight</th>
+                        <th>Container No</th>
+                        <th>Pickup Date</th>
+                        <th>Dropoff Date</th>
+                        <th>Driver</th>
+                        <th>Vehicle</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        LoadDetails();
+    });
+
+    function GetBack() {
+        document.location = '@Url.Action("TripsCompleted", "Booking")';
+    }
+
+    function LoadDetails() {
+        var BN = document.getElementById("BookingNo").value;
+
+        var data = { 'BN': BN }
+        data = JSON.stringify(data);
+
+        $.ajax({
+            url: "/Booking/GetTripsCompletedDetails",
+            data: data,
+            type: "POST",
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (response) {
+                $('#tblDetailsSummary').DataTable({
+                    "destroy": true,
+                    "bLengthChange": false,
+                    "aaData": response,
+                    "bPaginate": true,
+                    "pageLength": 25,
+                    "bInfo": true,
+                    "paging": true,
+                    order: [],
+                    "searching": true,
+                    "columns": [
+                        { "data": "ContainerSize" },
+                        { "data": "ContainerType" },
+                        { "data": "Weight" },
+                        { "data": "ContainerNo" },
+                        { "data": "PickUpDate" },
+                        { "data": "DropOffDate" },
+                        { "data": "Driver" },
+                        { "data": "Vehicle" }
+                    ],
+                    mark: true
+                });
+            },
+            error: function (error) {
+                alert(error.responseText);
+            }
+        });
+    }
+</script>

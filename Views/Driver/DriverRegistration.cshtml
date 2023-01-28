@@ -1,0 +1,271 @@
+﻿
+@{
+    ViewBag.Title = "Driver Registration";
+    Layout = "~/Views/Shared/_LayoutDashboard.cshtml";
+}
+
+<div id="DriverEntry">
+    <div class="page-header">
+        <h4 class="page-title">Driver Registration</h4>
+        <button class="btn btn-primary" title="Summary" data-toggle="tooltip" data-placement="bottom" onclick="ShowSummary()"><i class="fa fa-file"></i></button>
+    </div>
+    <div class="card">
+        <div class="card-body">
+            <div class="form-group">
+                <div class="col-4">
+                    <label class="form-label mt-1">Name :</label>
+                </div>
+                <div class="col-4">
+                    @Html.TextBox("Name", null, new { @class = "form-control", @id = "name", name = "name", autocomplete = "off" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-4">
+                    <label class="form-label mt-1">DOB :<i class="fa fa-calendar"></i></label>
+                </div>
+                <div class="col-4">
+                    @Html.TextBox("DOB", null, new { @class = "form-control datePicker", @id = "dob", name = "dob", @Value = DateTime.Now.ToString("dd MMM yyyy") })
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-4">
+                    <label class="form-label mt-1">License No :</label>
+                </div>
+                <div class="col-4">
+                    @Html.TextBox("LicenseNo", null, new { @class = "form-control", @id = "licenseNo", name = "licenseNo", autocomplete = "off" })
+                </div>
+            </div>
+
+            <div class="col-sm-12 col-lg-3 col-md-3">
+                <div class="form-group">
+                    <div class="row gutters-xs">
+                        <div class="col">
+                            <a href="#" onclick="addAttachment()">
+                                <i class="fa fa-paperclip fa-2x	" style="color:#070884" aria-hidden="true" title="Upload Attachments"></i>
+                                <span class="custom-switch-description" style="font-size:17px;color:#6c4cbb"><b><label id="lblAttachment">0</label></b></span>
+                            </a>
+                        </div>
+                    </div>
+                    <label class="form-label">Upload Attachments</label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-4">
+                    <label class="form-label mt-1">Mobile :</label>
+                </div>
+                <div class="col-4">
+                    @Html.TextBox("Mobile", null, new { @class = "form-control", @id = "mobile", name = "mobile", autocomplete = "off" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col">
+                    <button class="btn btn-success" title="Save" data-toggle="tooltip" data-placement="bottom" onclick="driverRegistration()"><i class="fa fa-save"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="DriverSummary">
+    <div class="page-header">
+        <h4 class="page-title">Driver Summary</h4>
+        <button class="btn btn-primary" title="Back" data-toggle="tooltip" data-placement="bottom" onclick="ShowEntry()"><i class="fa fa-arrow-left"></i></button>
+    </div>
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="th_Background table table-striped table-bordered text-center text-nowrap" style="width:100%" id="tblSummary">
+                    <thead class="bg-primary">
+                        <tr>
+                            <th>Driver Name</th>
+                            <th>Date of Birth</th>
+                            <th>License Number</th>
+                            <th>Mobile Number</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="licenseModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content" id='licenseModalContent'></div>
+    </div>
+</div>
+
+<script>
+    var DocId = 0;
+    var DriverNo = "0";
+    var runningNo = 1;
+    var licenseAttachment = [];
+    var licenseAttachment;
+    var totalAttchment = [];
+    var masterAttachment = [];
+
+    $(document).ready(function () {
+        Load();
+        $("#DriverSummary").hide();
+    });
+
+    $( function() {
+        $(".datePicker").datepicker({
+            autoclose: true,
+            todayHighlight: true,
+            format: 'dd M yyyy',
+            language: "tr",
+            changeMonth: true,
+            changeYear: true,
+        });
+    });
+
+    function addAttachment() {
+        $.ajax({
+            type: "POST",
+            url: "/Driver/AttachmentDriverRegistration",
+            contentType: "application/json; charset=utf-8",
+            success: function (response) {
+                $('#licenseModalContent').html(response);
+                $('#licenseModal').modal('show');
+            },
+            failure: function (response) {
+                alert(response);
+                alert(response.responseText);
+            },
+            error: function (response) {
+                alert(response.responseText);
+            }
+        })
+    }
+
+    function driverRegistration() {
+        var basicElement = {};
+        basicElement.DocId = DocId;
+        basicElement.DriverNo = DriverNo;
+        basicElement.DriverName = $("#name").val();
+        basicElement.DOB = $("#dob").val();
+        basicElement.LicenseNo = $("#licenseNo").val();
+        basicElement.MobileNo = $("#mobile").val();
+
+        if (basicElement.DriverName == "") {
+            Swal.fire({
+                title: 'Error',
+                text: "Please Enter the Name",
+                icon: 'error'
+            });
+            return false;
+        }
+        if (basicElement.DOB == "") {
+            Swal.fire({
+                title: 'Error',
+                text: "Please Enter the Date Of Birth",
+                icon: 'error'
+            });
+            return false;
+        }
+        if (basicElement.LicenseNo == "") {
+            Swal.fire({
+                title: 'Error',
+                text: "Please Enter the License Number",
+                icon: 'error'
+            });
+            return false;
+        }
+        if (basicElement.MobileNo == "") {
+            Swal.fire({
+                title: 'Error',
+                text: "Please Enter the Mobile Number",
+                icon: 'error'
+            });
+            return false;
+        }
+
+        totalAttchment = licenseAttachment;
+        for (i = 0; i < totalAttchment.length; i++) {
+            var element = {};
+            element.UploadFor = "Driver License";
+            element.DocName = totalAttchment[i].DocName;
+            element.FilePath = totalAttchment[i].FilePath;
+            element.ContentType = totalAttchment[i].ContentType;
+            masterAttachment.push(element);
+        }
+
+        var data = { 'DD': basicElement, 'A': masterAttachment };
+        data = JSON.stringify(data);
+
+        $.ajax({
+            type: 'post',
+            url: '/Driver/AjaxDriverRegistration',
+            data: data,
+            async: false,
+            contentType: "application/json; charset=utf-8",
+            success: function (response) {
+                if (response.Status != 0) {
+                    Swal.fire({
+                        title: 'Success',
+                        text: 'Record saved successfully.',
+                        icon: 'success'
+                    }).then((result) => {
+                        document.location = '@Url.Action("DriverRegistration", "Driver")';
+                    });
+                } else {
+                    Swal.fire({
+                        title: 'Error',
+                        text: response.Message,
+                        icon: 'error'
+                    })
+                }
+            },
+            error: function (err) {
+                alert(err.responseText);
+            }
+        });
+    }
+
+    function Load() {
+        $.ajax({
+            url: "/Driver/GetDrivers",
+            type: "POST",
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (response) {
+                $('#tblSummary').DataTable({
+                    "destroy": true,
+                    "bLengthChange": false,
+                    "aaData": response,
+                    "bPaginate": true,
+                    "pageLength": 25,
+                    "bInfo": true,
+                    "paging": true,
+                    order: [],
+                    "searching": true,
+                    "columns": [
+                        { "data": "DriverName" },
+                        { "data": "DOB" },
+                        { "data": "LicenseNo" },
+                        { "data": "MobileNo" }
+                    ],
+                    mark: true
+                });
+            },
+            error: function (error) {
+                alert(error.responseText);
+            }
+        });
+    }
+
+    function ShowSummary() {
+        $("#DriverEntry").hide();
+        $("#DriverSummary").show();
+    }
+
+    function ShowEntry() {
+        $("#DriverSummary").hide();
+        $("#DriverEntry").show();
+    }
+</script>

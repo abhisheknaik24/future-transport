@@ -1,0 +1,53 @@
+﻿body {
+}
+
+.card {
+    border: 1px solid #9f78ff !important;
+    cursor:default
+}
+
+
+#personGraph {
+    display: none;
+}
+
+.styleNone {
+    display: none;
+}
+
+.green_Total {
+    background: #7bc144 !important;
+}
+
+.arrival_image {
+    height: 50px;
+    width: 50px;
+    float: left;
+    margin: -20px 0 0 9px;
+    -webkit-transform: scaleX(-1);
+    transform: scaleX(-1);
+}
+
+
+.margin_wrap {
+    margin: 0 80px;
+}
+
+.selected {
+    color: #fff !important;
+    background-color: #28afd0 !important;
+    border-color: #28afd0 !important;
+    padding: 5px 25px !important;
+    box-shadow: 0 8px 6px -6px black !important;
+}
+
+#importArrivalMainCardMonthWise {
+    display: none;
+}
+
+#importArrivalMainCardMonthWise {
+    display: none;
+}
+.card1 {
+   
+}

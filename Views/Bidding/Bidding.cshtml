@@ -1,0 +1,325 @@
+﻿
+@{
+    ViewBag.Title = "Bidding";
+    Layout = "~/Views/Shared/_LayoutDashboard.cshtml";
+}
+
+<div class="page-header">
+    <h4 class="page-title">Bidding</h4>
+</div>
+<div class="card">
+    <div class="card-body">
+        <div class="row no-gutters">
+            <div class="col-md-2">
+                <div class="row no-gutters">
+                    <div class="col-md-3">
+                        <label class="form-label mt-2">From :</label>
+                    </div>
+                    <div class="col-md-7">
+                        @Html.TextBox("From", null, new { @class = "form-control datePicker", @id = "fromS", name = "fromS", @Value = DateTime.Now.AddDays(-14).ToString("dd MMM yyyy") })
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="row no-gutters">
+                    <div class="col-md-2">
+                        <label class="form-label mt-2">To :</label>
+                    </div>
+                    <div class="col-md-7">
+                        @Html.TextBox("To", null, new { @class = "form-control datePicker", @id = "toS", name = "toS", @Value = DateTime.Now.AddDays(1).ToString("dd MMM yyyy") })
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="row no-gutters">
+                        <div class="col-md-5">
+                            <label class="form-label mt-2">Shipment Type :</label>
+                        </div>
+                        <div class="col-md-5">
+                            <select id="shipmentTypeS" class="form-control">
+                                <option value="I">Import</option>
+                                <option value="E">Export</option>
+                                <option value="0" selected>Both</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="row no-gutters">
+                        <div class="col-md-5">
+                            <label class="form-label mt-2">Container Size :</label>
+                        </div>
+                        <div class="col-md-5">
+                            <select id="containerSizeS" class="form-control">
+                                <option value="20">20</option>
+                                <option value="40">40</option>
+                                <option value="45">45</option>
+                                <option value="0" selected>ALL</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <button class="btn btn-warning" title="Search" data-toggle="tooltip" data-placement="bottom" onclick="Load()"><i class="fa fa-search"></i></button>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="th_Background table table-striped table-bordered text-center text-nowrap" style="width:100%" id="tblSummary">
+                <thead class="bg-primary">
+                    <tr>
+                        <th>BID</th>
+                        <th>Booking No</th>
+                        <th>Booking Date & Time</th>
+                        <th>Plan Date</th>
+                        <th>20</th>
+                        <th>40</th>
+                        <th>45</th>
+                        <th>Total Quantity</th>
+                        <th>PickUp Location</th>
+                        <th>DropOff Location</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+
+        <div class="modal" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <label class="form-label mt-1">Quantity :</label>
+                        @Html.TextBox("Quantity", null, new { @type = "number", @class = "form-control", @id = "Quantity", name = "Quantity", autocomplete = "off", @readonly="readonly" })
+                        <label class="form-label mt-1">Amount :</label>
+                        @Html.TextBox("Rate", null, new { @type = "number", @class = "form-control", @id = "Rate", name = "Rate", autocomplete = "off" })
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-success" id="isSubmited" title="Save" data-toggle="tooltip" data-placement="bottom"><i class="fa fa-save"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var BookingId = 0;
+    var BookingNo = "0";
+    var VendorId = 0;
+
+    $(document).ready(function () {
+        BookingId = "@ViewBag.BookingId";
+        BookingNo = "@ViewBag.BookingNo";
+        VendorId = "@ViewBag.VendorId";
+        Load();
+    });
+
+    $( function() {
+    $( ".datePicker" ).datepicker({
+            autoclose: true,
+            todayHighlight: true,
+            format: 'dd M yyyy',
+            language: "tr",
+            changeMonth: true,
+            changeYear: true,
+        });
+    });
+
+    function Load() {
+        var FromDate = document.getElementById("fromS").value;
+        var ToDate = document.getElementById("toS").value;
+
+        if (FromDate == "" || ToDate == "") {
+            alert("Please select date range");
+            return false;
+        }
+
+        var date1 = new Date(FromDate);
+        var date2 = new Date(ToDate);
+        var Today = new Date();
+
+        if (date1 >= date2) {
+            document.getElementById('toS').style.borderColor = "red";
+            Swal.fire({
+                title: 'Error',
+                text: "To date should not be less than from date ",
+                icon: 'error'
+            })
+            return false;
+        } else {
+            document.getElementById('toS').style.borderColor = "Gainsboro";
+        }
+        var element = {};
+        element.FromDate = document.getElementById("fromS").value;
+        element.ToDate = document.getElementById("toS").value;
+        element.ShipmentType = document.getElementById("shipmentTypeS").value;
+        element.ContainerSize = document.getElementById("containerSizeS").value;
+
+        var data = { 'BD': element }
+        data = JSON.stringify(data);
+
+        $.ajax({
+            url: "/Bidding/GetBiddings",
+            data: data,
+            type: "POST",
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (response) {
+                $('#tblSummary').DataTable({
+                    "destroy": true,
+                    "bLengthChange": false,
+                    "aaData": response,
+                    "bPaginate": true,
+                    "pageLength": 25,
+                    "bInfo": true,
+                    "paging": true,
+                    order: [],
+                    "searching": true,
+                    "columns": [
+                        {
+                            "data": "Rate",
+                            "orderable": false,
+                            "render": function (data, type, row, meta) {
+                                if (type === 'display') {
+                                    if (row.Rate == "") {
+                                        data = "<div class=\"text-center\"><button class=\"btn btn-sm btn-success\" onclick=\"AcceptBID('" + row.BookingNo + "', '" + row.TotalQuantity +"')\"><i class=\"fa fa-gavel\"></i></button></div>"
+                                    }
+                                    else {
+                                        data = row.Rate
+                                    }
+                                }
+                                return data;
+                            }
+                        },
+                        { "data": "BookingNo" },
+                        { "data": "BookingDateTime" },
+                        { "data": "PlanDate" },
+                        {
+                            "data": "QuantityTwenty",
+                            "orderable": false,
+                            "render": function (data, type, row, meta) {
+                                if (type === 'display') {
+                                    if (row.QuantityTwenty == 0) {
+                                        data = "<div class=\"text-center\">-</div>"
+                                    }
+                                    else {
+                                        data = row.QuantityTwenty
+                                    }
+                                }
+                                return data;
+                            }
+                        },
+                        {
+                            "data": "QuantityFourty",
+                            "orderable": false,
+                            "render": function (data, type, row, meta) {
+                                if (type === 'display') {
+                                    if (row.QuantityFourty == 0) {
+                                        data = "<div class=\"text-center\">-</div>"
+                                    }
+                                    else {
+                                        data = row.QuantityFourty
+                                    }
+                                }
+                                return data;
+                            }
+                        },
+                        {
+                            "data": "QuantityFourtyFive",
+                            "orderable": false,
+                            "render": function (data, type, row, meta) {
+                                if (type === 'display') {
+                                    if (row.QuantityFourtyFive == 0) {
+                                        data = "<div class=\"text-center\">-</div>"
+                                    }
+                                    else {
+                                        data = row.QuantityFourtyFive
+                                    }
+                                }
+                                return data;
+                            }
+                        },
+                        { "data": "TotalQuantity" },
+                        { "data": "PickUpLocation" },
+                        { "data": "DropOffLocation" }
+                    ],
+                    mark: true
+                });
+            },
+            error: function (error) {
+                alert(error.responseText);
+            }
+        });
+    }
+
+    function AcceptBID(BN, TotalQuantity) {
+        $(".modal").modal('show');
+        BookingNo = BN;
+        $("#Quantity").val(TotalQuantity);
+    }
+
+    $('#isSubmited').click(function () {
+            var basicElement = {};
+            basicElement.BookingNo = BookingNo;
+            basicElement.VendorId = VendorId;
+            basicElement.Quantity = $("#Quantity").val();
+            basicElement.Rate = $("#Rate").val();
+
+            if (basicElement.Quantity == "") {
+            Swal.fire({
+                title: 'Error',
+                text: "Please enter quantity",
+                icon: 'error'
+            });
+                return false;
+            }
+            if (basicElement.Rate == "") {
+            Swal.fire({
+                title: 'Error',
+                text: "Please enter rate",
+                icon: 'error'
+            });
+                return false;
+            }
+
+            var data = { 'SD': basicElement };
+            data = JSON.stringify(data);
+
+            $.ajax({
+                type: 'post',
+                url: '/Bidding/AjaxAcceptedBidding',
+                data: data,
+                async: false,
+                contentType: "application/json; charset=utf-8",
+                success: function (response) {
+                    if (response.Status != 0) {
+                        Swal.fire({
+                            title: 'Success',
+                            text: response.Message,
+                            icon: 'success'
+                        }).then((result) => {
+                            $(".modal").modal('hide');
+                            document.location = '@Url.Action("Bidding", "Bidding")';
+                        });
+                    } else {
+                        Swal.fire({
+                            title: 'Error',
+                            text: response.Message,
+                            icon: 'error'
+                        })
+                    }
+                },
+                error: function (err) {
+                    alert(err.responseText);
+                }
+            });
+        });
+</script>

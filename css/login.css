@@ -1,0 +1,70 @@
+﻿body {
+}
+
+.card {
+    border: 1px solid #9f78ff !important;
+}
+
+
+#personGraph{
+    display:none;
+}
+.styleNone {
+    display:none;
+}
+.green_Total{
+    background: #7bc144 !important;
+}
+.arrival_image {
+    height: 50px;
+    width: 50px;
+    float: left;
+    margin: -30px 0 0 9px;
+    -webkit-transform: scaleX(-1);
+    transform: scaleX(-1);
+}
+
+.margin_wrap {
+    margin: 0 80px;
+}
+
+  .selected{
+    color: #fff !important;
+      background-color: #28afd0 !important;
+      border-color: #28afd0 !important;
+      padding: 5px 25px !important;
+      box-shadow: 0 8px 6px -6px black !important;
+  }
+
+  #importArrivalMainCardMonthWise{
+      display: none;
+  }
+
+  #importArrivalMainCardMonthWise{
+      display: none;
+  }
+
+  #pipeLineMainCardMonthWise{
+      display: none;
+  }
+
+.selected {
+    color: #fff !important;
+    background-color: #28afd0 !important;
+    border-color: #28afd0 !important;
+    padding: 5px 25px !important;
+    box-shadow: 0 8px 6px -6px black !important;
+}
+.input-group-prepend > .btn, .input-group-append > .btn, .input-group-btn > .btn {
+    height: 100%;
+    border-color: rgba(0, 40, 100, 0.92);
+    background: #fff;
+    color: #28afd0;
+}
+
+.btn-outline-info:not(:disabled):not(.disabled):active, .btn-outline-info:not(:disabled):not(.disabled).active, .show > .btn-outline-info.dropdown-toggle {
+    height: 100%;
+    border-color: rgba(0, 40, 100, 0.92) !important;
+    background: #fff !important;
+    color: #28afd0 !important;
+}

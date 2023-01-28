@@ -1,0 +1,1334 @@
+﻿@model FutureTransportEntities.BusinessEntities.ManageCompany
+
+@{
+    ViewBag.Title = "Manage Company";
+    Layout = "~/Views/Shared/_LayoutDashboard.cshtml";
+}
+
+<div id="tracker-loader" style="display: none;"></div>
+
+<div class=" content-area" id="divCompanySummary">
+    <div class="page-header">
+        <h4 class="page-title">Company Summary</h4>
+        <ol class="breadcrumb" id="IsDirect">
+            <li @*class="breadcrumb-item"*@ id="btnManageFactory">
+                <a onclick="BackToFactorySummary();" id="add" class="btn btn-primary btn-gray" style="color: white; align-content: center; MARGIN-TOP: 6PX ">
+                    Factory/Location
+                </a>
+            </li>
+            <li @*class="breadcrumb-item"*@ id="btnAdd" style="margin-left:10px">
+                <a onclick="ShowAddCompany();" id="add" class="btn btn-primary btn-success" style="color: white; align-content: center; MARGIN-TOP: 6PX ">
+                    <i class="fa fa-plus" data-toggle="tooltip" data-placement="bottom" title="Add User" data-original-title="Add User" style="font-size:13px"></i>
+                </a>
+            </li>
+        </ol>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="form-horizontal">
+
+                        <div class="row">
+
+                            <div class="col-lg-3 col-sm-12">
+                                <div class="form-group">
+                                    <label class="form-label mandatory">Search</label>
+                                    <div class="row gutters-xs">
+                                        <div class="col">
+                                            @Html.TextBox("txtsearch", null, new { @class = "form-control ", @id = "txtsearch", name = "txtsearch", autocomplete = "on" })
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-1 col-md-1 col-sm-12 col-xs-12" id="divSearchDetails">
+                                <div class="form-group" style="padding-top:26px;">
+                                    <button class="btn btn-primary" id="gstSearch" type="button" onclick="ShowCompanySummary()">
+                                    <i class="fe fe-search"></i></button>
+                                </div>
+                            </div>
+                            @*<div class="col-lg-3 col-sm-12">
+                                <div class="form-group">
+                                    <label class="form-label" style="visibility:hidden"> '</label>
+                                    <div class="row gutters-xs">
+                                        <div class="col">
+                                            <input type="button" id="btnShow" value="Show" class="btn btn-primary" onclick="ShowCompanySummary();" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>*@
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-12 col-sm-12">
+                                <div class="table-responsive">
+                                    <table id="tblCompanySummary" class=" th_Background table table-striped table-bordered text-nowrap" style="width:100%">
+                                        <thead>
+                                            <tr>
+                                                <th>View</th>
+                                                <th>SrNo.</th>
+                                                <th>Company Name</th>
+                                                <th>GST Number</th>
+                                                <th>Company Address</th>
+                                            </tr>
+                                        </thead>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class=" content-area overflow-hidden" id="divCreate" style="display:none">
+    <div class="page-single">
+        <div class="container">
+            <div class="content-area overflow-hidden" id="divadddetails">
+                <div>
+                    <div class="page-header">
+                        <h4 class="page-title">Add Company</h4>
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item">
+                                <a onclick="BackToSummary();" class="btn btn-primary btn-success text-right" style="align-content:center;color:white">
+                                    <i class="fa fa-arrow-left" data-placement="bottom" title="Add Work Order"></i>
+                                </a>
+                            </li>
+                        </ol>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12 col-lg-12">
+                            <div class="card">
+                                <div class="card-body p-6">
+                                    <div class="row">
+                                        <div class="col-lg-3 col-sm-12">
+                                            <div class="form-group">
+                                                <label class="form-label mandatory">Company Name</label>
+                                                <div class="row gutters-xs">
+                                                    <div class="col">
+                                                        @Html.TextBox("txtCompanyName", null, new
+                                                        {
+                                                            @class = "form-control",
+                                                            @id = "txtCompanyName",
+                                                       @name = "txtCompanyName",
+                                                            autocomplete = "off",
+                                                            placeholder = "Enter Company Name"
+                                                        })
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3 col-sm-12" id="diRegTypeDropDown" style="margin-bottom:10px">
+                                            <label class="form-label">Registration Type </label>
+                                            @Html.DropDownList("ddlRegTypesCompany", new List<SelectListItem>
+                         { new SelectListItem { Text = "--Select--", Value = ""},
+                           new SelectListItem { Text = "Registered", Value = "Register"},
+                           new SelectListItem { Text = "Not Registered", Value = "NotRegister"},
+                           }, new { @class = "form-control", autocomplete = "off" })
+                                        </div>
+                                        <div class="col-lg-3 col-sm-12" style="display:none" id="divCompanyGSTNo">
+                                            <div class="form-group">
+                                                <label class="form-label mandatory">GST Number</label>
+                                                <div class="row gutters-xs">
+                                                    <div class="col">
+                                                        @Html.TextBox("txtCompanyGSTNumber", null, new
+                                                        {
+                                                            @class = "form-control",
+                                                            @id = "txtCompanyGSTNumber",
+                                                       name = "txtCompanyGSTNumber",
+                                                            autocomplete = "off",
+                                                            placeholder = "GST Number"
+                                                        })
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3 col-sm-12" style="display:none" id="divCompanyVerifyGSTNo">
+                                            <div class="form-group">
+                                                <label class="form-label mandatory" style="visibility:hidden">GST Number</label>
+                                                <div class="row gutters-xs">
+                                                    <div class="col">
+                                                        <button class="btn btn-success" onclick="VerifyCompanyGSTNo()">Verify GST No</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-6 col-sm-12">
+                                            <div class="form-group">
+                                                <label class="form-label mandatory">Address</label>
+                                                <div class="row gutters-xs">
+                                                    <div class="col">
+                                                        @Html.TextBox("txtCompanyAddress", null, new
+                                                        {
+                                                            @class = "form-control",
+                                                            @id = "txtCompanyAddress",
+                                                       @name = "txtCompanyAddress",
+                                                            autocomplete = "off",
+                                                            placeholder = "Enter Address"
+                                                        })
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-3 col-sm-12">
+                                            <div class="form-group">
+                                                <label class="form-label mandatory">City</label>
+                                                <div class="row gutters-xs">
+                                                    <div class="col">
+                                                        @Html.TextBox("txtCompanyCity", null, new
+                                                        {
+                                                            @class = "form-control",
+                                                            @id = "txtCompanyCity",
+                                                       @name = "txtCompanyCity",
+                                                            autocomplete = "off",
+                                                            placeholder = "Enter City"
+                                                        })
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3 col-sm-12">
+                                            <div class="form-group">
+                                                <label class="form-label mandatory">State</label>
+                                                <div class="row gutters-xs">
+                                                    <div class="col">
+                                                        @Html.TextBox("txtCompanyState", null, new
+                                                        {
+                                                            @class = "form-control",
+                                                            @id = "txtCompanyState",
+                                                       @name = "txtCompanyState",
+                                                            autocomplete = "off",
+                                                            placeholder = "Enter State"
+                                                        })
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-3 col-sm-12">
+                                            <div class="form-group">
+                                                <label class="form-label mandatory">Country</label>
+                                                <div class="row gutters-xs">
+                                                    <div class="col">
+                                                        @Html.TextBox("txtCompanyCountry", null, new
+                                                        {
+                                                            @class = "form-control",
+                                                            @id = "txtCompanyCountry",
+                                                       @name = "txtCompanyCountry",
+                                                            autocomplete = "off",
+                                                            placeholder = "Enter Country"
+                                                        })
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3 col-sm-12">
+                                            <div class="form-group">
+                                                <label class="form-label mandatory">Zip Code</label>
+                                                <div class="row gutters-xs">
+                                                    <div class="col">
+                                                        @Html.TextBox("txtCompanyZipCode", null, new
+                                                        {
+                                                            @class = "form-control",
+                                                            @id = "txtCompanyZipCode",
+                                                       @name = "txtCompanyZipCode",
+                                                            autocomplete = "off",
+                                                            placeholder = "Enter Zip Code"
+                                                        })
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3 col-sm-12" style="display:none">
+                                            <div class="form-group">
+                                                <label class="form-label mandatory">Main Company ID</label>
+                                                <div class="row gutters-xs">
+                                                    <div class="col">
+                                                        @Html.TextBox("txtMainCompID", @Session["Tracker_userID"].ToString(), new
+                                                        {
+                                                            @class = "form-control",
+                                                       @id = "txtMainCompID",
+                                                            @name = "txtMainCompID",
+                                                            autocomplete = "off"
+                                                        })
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <hr style="border-width: 2px;" />
+                                    <div class="row">
+                                        <div class="col-md-1 col-xs-4">
+                                            <div class="form-group">
+                                                <div class="row gutters-xs">
+                                                    <div class="col">
+                                                        <button class="btn btn-success btn-xs" id="btndriverholdpayment" onclick="SaveCompanyDetails();">
+                                                            Save
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2 col-xs-4">
+                                            <div class="form-group">
+                                                <div class="row gutters-xs">
+                                                    <div class="col">
+                                                        <button class="btn btn-gray btn-xs" id="btndriverholdpayment" onclick="AddHoldpayment();">Clear</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class=" content-area" id="divFactorySummary" style="display:none">
+    <div class="page-header">
+        <h4 class="page-title">Factory/Location Summary</h4>
+        <ol class="breadcrumb" id="IsDirect">
+            <li class="breadcrumb-item">
+                <a onclick="BackToCompanySummary();" class="btn btn-primary btn-gray text-right" style="align-content:center;color:white">
+                    <i class="fa fa-arrow-left" data-placement="bottom" title="Back"></i>
+                </a>
+            </li>
+            <li @*class="breadcrumb-item"*@ id="btnAdd" style="margin-left:10px">
+                <a onclick="ManageFactory();" id="add" class="btn btn-primary btn-success" style="color: white; align-content: center;">
+                    <i class="fa fa-plus" data-toggle="tooltip" data-placement="bottom" title="Add User" data-original-title="Add User" style="font-size:13px"></i>
+                </a>
+            </li>
+        </ol>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="form-horizontal">
+
+                        <div class="row">
+
+                            <div class="col-lg-3 col-sm-12">
+                                <div class="form-group">
+                                    <label class="form-label mandatory">Search</label>
+                                    <div class="row gutters-xs">
+                                        <div class="col">
+                                            @Html.TextBox("txtsearch", null, new { @class = "form-control ", @id = "txtsearch", name = "txtsearch", autocomplete = "on" })
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-1 col-md-1 col-sm-12 col-xs-12" id="divSearchDetails">
+                                <div class="form-group" style="padding-top:26px;">
+                                    <button class="btn btn-primary" id="gstSearch" type="button" onclick="ShowFactorySummary()">
+                                        <i class="fe fe-search"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            @*<div class="col-lg-3 col-sm-12">
+                                    <div class="form-group">
+                                        <label class="form-label" style="visibility:hidden"> '</label>
+                                        <div class="row gutters-xs">
+                                            <div class="col">
+                                                <input type="button" id="btnShow" value="Show" class="btn btn-primary" onclick="ShowFactorySummary();" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>*@
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-12 col-sm-12">
+                                <div class="table-responsive">
+                                    <table id="tblFactorySummary" class=" th_Background table table-striped table-bordered text-nowrap" style="width:100%">
+                                        <thead>
+                                            <tr>
+                                                @*<th>View</th>*@
+                                                <th>SrNo.</th>
+                                                <th>Company Name</th>
+                                                <th>Factory Name</th>
+                                                <th>Factory Address</th>
+                                            </tr>
+                                        </thead>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class=" content-area overflow-hidden" id="divFactoryDetails" style="display:none">
+    <div class="page-single">
+        <div class="container">
+            <div class="content-area overflow-hidden" id="divadddetails">
+                <div>
+                    <div class="page-header">
+                        <h4 class="page-title">Add Factory/Location</h4>
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item">
+                                <a onclick="BackToFactorySummary();" class="btn btn-primary btn-success text-right" style="align-content:center;color:white">
+                                    <i class="fa fa-arrow-left" data-placement="bottom" title="Back"></i>
+                                </a>
+                            </li>
+                        </ol>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12 col-lg-12">
+                            <div class="card">
+                                <div class="card-body p-6">
+                                    <div class="row">
+                                        <div class="col-lg-3 col-sm-12">
+                                            <div class="form-group">
+                                                <label class="form-label mandatory">Company Name</label>
+                                                <div class="row gutters-xs">
+                                                    <div class="col">
+                                                        @Html.DropDownList("ddlCompanyList", (IEnumerable<SelectListItem>)ViewBag.CompanyList, "--Select-- ", new { @class = "form-control", @id = "ddlCompanyList", name = "ddlCompanyList", autocomplete = "off" })
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3 col-sm-12" id="diRegTypeDropDown" style="margin-bottom:10px">
+                                            <label class="form-label">Type of Registration </label>
+                                            @Html.DropDownList("ddlRegTypes", new List<SelectListItem>
+                         { new SelectListItem { Text = "--Select--", Value = ""},
+                           new SelectListItem { Text = "Registered", Value = "Register"},
+                           new SelectListItem { Text = "Not Registered", Value = "NotRegister"},
+                           }, new { @class = "form-control", autocomplete = "off" })
+                                        </div>
+                                        <div class="col-lg-3 col-sm-12" style="display:none" id="divGstNo">
+                                            <div class="form-group">
+                                                <label class="form-label mandatory">GST Number</label>
+                                                <div class="row gutters-xs">
+                                                    <div class="col">
+                                                        @Html.TextBox("txtFactoryGSTNumber", null, new
+                                                        {
+                                                            @class = "form-control",
+                                                            @id = "txtFactoryGSTNumber",
+                                                       name = "txtFactoryGSTNumber",
+                                                            autocomplete = "off",
+                                                            placeholder = "GST Number"
+                                                        })
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3 col-sm-12" style="display:none" id="divVerifyGstBtn">
+                                            <div class="form-group">
+                                                <label class="form-label mandatory" style="visibility:hidden">GST Number</label>
+                                                <div class="row gutters-xs">
+                                                    <div class="col">
+                                                        <button class="btn btn-success" onclick="VerifyFactoryGSTNo()">Verify GST No</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-6 col-sm-12">
+                                            <div class="form-group">
+                                                <label class="form-label mandatory">Factory Name</label>
+                                                <div class="row gutters-xs">
+                                                    <div class="col">
+                                                        @Html.TextBox("txtFactoryName", null, new
+                                                        {
+                                                            @class = "form-control",
+                                                            @id = "txtFactoryName",
+                                                       @name = "txtFactoryName",
+                                                            autocomplete = "off",
+                                                            placeholder = "Enter Factory Name"
+                                                        })
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-6 col-sm-12">
+                                            <div class="form-group">
+                                                <label class="form-label mandatory">Address</label>
+                                                <div class="row gutters-xs">
+                                                    <div class="col">
+                                                        @Html.TextBox("txtFactoryAddress", null, new
+                                                        {
+                                                            @class = "form-control",
+                                                            @id = "txtFactoryAddress",
+                                                       @name = "txtFactoryAddress",
+                                                            autocomplete = "off",
+                                                            placeholder = "Enter Address"
+                                                        })
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-3 col-sm-12">
+                                            <div class="form-group">
+                                                <label class="form-label mandatory">City</label>
+                                                <div class="row gutters-xs">
+                                                    <div class="col">
+                                                        @Html.TextBox("txtFactoryCity", null, new
+                                                        {
+                                                            @class = "form-control",
+                                                            @id = "txtFactoryCity",
+                                                       @name = "txtFactoryCity",
+                                                            autocomplete = "off",
+                                                            placeholder = "Enter City"
+                                                        })
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3 col-sm-12">
+                                            <div class="form-group">
+                                                <label class="form-label mandatory">State</label>
+                                                <div class="row gutters-xs">
+                                                    <div class="col">
+                                                        @Html.TextBox("txtFactoryState", null, new
+                                                        {
+                                                            @class = "form-control",
+                                                            @id = "txtFactoryState",
+                                                       @name = "txtFactoryState",
+                                                            autocomplete = "off",
+                                                            placeholder = "Enter State"
+                                                        })
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-3 col-sm-12">
+                                            <div class="form-group">
+                                                <label class="form-label mandatory">Country</label>
+                                                <div class="row gutters-xs">
+                                                    <div class="col">
+                                                        @Html.TextBox("txtFactoryCountry", null, new
+                                                        {
+                                                            @class = "form-control",
+                                                            @id = "txtFactoryCountry",
+                                                       @name = "txtFactoryCountry",
+                                                            autocomplete = "off",
+                                                            placeholder = "Enter Country"
+                                                        })
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3 col-sm-12">
+                                            <div class="form-group">
+                                                <label class="form-label mandatory">Zip Code</label>
+                                                <div class="row gutters-xs">
+                                                    <div class="col">
+                                                        @Html.TextBox("txtFactoryZipCode", null, new
+                                                        {
+                                                            @class = "form-control",
+                                                            @id = "txtFactoryZipCode",
+                                                       @name = "txtFactoryZipCode",
+                                                            autocomplete = "off",
+                                                            placeholder = "Enter Zip Code"
+                                                        })
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3 col-sm-12" style="display:none">
+                                            <div class="form-group">
+                                                <label class="form-label mandatory">User ID</label>
+                                                <div class="row gutters-xs">
+                                                    <div class="col">
+                                                        @Html.TextBox("txtMainCompID", @Session["Tracker_userID"].ToString(), new
+                                                        {
+                                                            @class = "form-control",
+                                                       @id = "txtMainCompID",
+                                                            @name = "txtMainCompID",
+                                                            autocomplete = "off"
+                                                        })
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <hr style="border-width: 2px;" />
+                                    <div class="row">
+                                        <div class="col-md-1 col-xs-4">
+                                            <div class="form-group">
+                                                <div class="row gutters-xs">
+                                                    <div class="col">
+                                                        <button class="btn btn-success btn-xs" id="btndriverholdpayment" onclick="SaveFactoryDetails();">
+                                                            Save
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2 col-xs-4">
+                                            <div class="form-group">
+                                                <div class="row gutters-xs">
+                                                    <div class="col">
+                                                        <button class="btn btn-gray btn-xs" id="btndriverholdpayment" onclick="AddHoldpayment();">Clear</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    $(document).ready(function () {
+        $("#tracker-loader").fadeIn("slow");
+        ShowCompanySummary();
+        $("#tracker-loader").fadeOut("slow");
+    });
+
+    $("#ddlRegTypes").change(function () {
+        var RegType = $("#ddlRegTypes").val();
+        // alert(SearchNO);
+        if (RegType == "Register") {
+
+            $("#divVerifyGstBtn").show();
+            $("#divGstNo").show();
+        }
+        if (RegType == "NotRegister") {
+
+            $("#divVerifyGstBtn").hide();
+            $("#divGstNo").hide();
+        }
+        if (RegType == "") {
+
+            $("#divVerifyGstBtn").hide();
+            $("#divGstNo").hide();
+            alert("Please Select Registraion Type");
+        }
+
+    });
+
+    $("#ddlRegTypesCompany").change(function () {
+        var RegType = $("#ddlRegTypesCompany").val();
+        // alert(SearchNO);
+        if (RegType == "Register") {
+
+            $("#divCompanyGSTNo").show();
+            $("#divCompanyVerifyGSTNo").show();
+        }
+        if (RegType == "NotRegister") {
+
+            $("#divCompanyGSTNo").hide();
+            $("#divCompanyVerifyGSTNo").hide();
+        }
+        if (RegType == "") {
+
+            $("#divCompanyGSTNo").hide();
+            $("#divCompanyVerifyGSTNo").hide();
+            alert("Please Select Registraion Type");
+        }
+
+    });
+
+    function ShowAddCompany() {
+
+        $("#divCompanySummary").hide();
+        $("#divFactoryDetails").hide();
+        $("#divFactorySummary").hide();
+        $("#divCreate").show();
+        $("#tracker-loader").fadeOut("slow");
+    }
+
+    function BackToSummary() {
+        $("#divCreate").hide();
+        $("#divFactoryDetails").hide();
+        $("#divFactorySummary").hide();
+        $("#divCompanySummary").show();
+        $("#tracker-loader").fadeOut("slow");
+    }
+
+    function BackToCompanySummary() {
+        ShowCompanySummary();
+        $("#divCreate").hide();
+        $("#divFactoryDetails").hide();
+        $("#divFactorySummary").hide();
+        $("#divCompanySummary").show();
+        $("#tracker-loader").fadeOut("slow");
+    }
+    function BackToFactorySummary() {
+        ShowFactorySummary();
+        $("#divFactoryDetails").hide();
+        $("#divCreate").hide();
+        $("#divCompanySummary").hide();
+        $("#divFactorySummary").show();
+        $("#tracker-loader").fadeOut("slow");
+
+    }
+
+    function ManageFactory() {
+        $("#divFactoryDetails").show();
+        $("#divCreate").hide();
+        $("#divCompanySummary").hide();
+        $("#divFactorySummary").hide();
+        $("#tracker-loader").fadeOut("slow");
+    }
+
+    function VerifyCompanyGSTNo() {
+        $("#tracker-loader").fadeIn("slow");
+        var GSTNo = $("#txtCompanyGSTNumber").val();
+        var data = { 'GSTNo': GSTNo };
+
+        data = JSON.stringify(data);
+        $.ajax({
+            url: "/CustomerRegistration/VerifyGSTNo",
+            data: data,
+            type: "POST",
+            contentType: "application/json; charset=utf-8",
+            success: function (result) {
+                debugger;
+
+
+                $("#txtCompanyAddress").val(result[0].Address);
+                $("#txtCompanyName").val(result[0].GSTName);
+                $("#txtCompanyCity").val(result[0].City);
+                $("#txtCompanyState").val(result[0].StateName);
+                $("#txtCompanyZipCode").val(result[0].ZipCode);
+                $("#txtCompanyCountry").val("India");
+
+                $("#tracker-loader").fadeOut("slow");
+                //$("#GSTNo").val(result.GSTNo);
+            },
+            error: function (error) {
+                $("#tracker-loader").fadeOut("slow");
+                let str = error.responseText;
+                var a = str.indexOf("<title>") + 7;
+                var b = str.indexOf("</title>");
+                str = str.substring(a, b);
+                alert("Something went wrong: " + str);
+            }
+        });
+    }
+
+    function VerifyFactoryGSTNo() {
+        $("#tracker-loader").fadeIn("slow");
+        var GSTNo = $("#txtFactoryGSTNumber").val();
+        var data = { 'GSTNo': GSTNo };
+
+        data = JSON.stringify(data);
+        $.ajax({
+            url: "/CustomerRegistration/VerifyGSTNo",
+            data: data,
+            type: "POST",
+            contentType: "application/json; charset=utf-8",
+            success: function (result) {
+                debugger;
+
+                $("#txtFactoryAddress").val(result[0].Address);
+                $("#txtFactoryName").val(result[0].GSTName);
+                $("#txtFactoryCity").val(result[0].City);
+                $("#txtFactoryState").val(result[0].StateName);
+                $("#txtFactoryZipCode").val(result[0].ZipCode);
+                $("#txtFactoryCountry").val("India");
+
+                $("#tracker-loader").fadeOut("slow");
+
+            },
+            error: function (error) {
+                $("#tracker-loader").fadeOut("slow");
+                let str = error.responseText;
+                var a = str.indexOf("<title>") + 7;
+                var b = str.indexOf("</title>");
+                str = str.substring(a, b);
+                alert("Something went wrong: " + str);
+            }
+        });
+    }
+
+
+    function ShowCompanySummary() {
+        $("#tracker-loader").fadeIn("slow");
+        debugger;
+
+        var Userid = $("#txtMainCompID").val();
+
+        var data = { 'Userid':Userid }
+
+        data = JSON.stringify(data);
+
+        $.ajax({
+            type: 'POST',
+            url: '/ManageCompany/GetCompanySummaryDetails',
+            data: data,
+            // data: "",
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            async: true,
+            success: function (jsonResult) {
+
+                if (jsonResult == "[]") {
+                    alert('No Data Found')
+                } else {
+                    $('#tblCompanySummary').DataTable({
+                        "destroy": true,
+                        "bLengthChange": false,
+                        "aaData": jsonResult,
+                        "bPaginate": false,
+                        "bInfo": false,
+                        "dom": 'Bfrtip',
+                        "buttons": [],
+                        "paging": true,
+                        "aaSorting": [],
+                        "columnDefs": [{
+                            "targets": 0,
+                            "orderable": false,
+                        }],
+                        "columns": [
+
+                            {
+                                "data": "Userid",
+                                "orderable": false,
+                                "render": function (data, type, full, meta) {
+                                    return "<button class='btn btn-primary btn-sm BtnView' onclick='ViewUserDetails(`" + data + "`)'><i class='fa fa-eye'></i><bitton>";
+                                }
+                            },
+                            //{
+                            //    "data": "PONO",
+                            //    "orderable": false,
+                            //    "render": function (data, type, row, meta) {
+                            //        var disabled1;
+                            //        if (row.IsApproved == true) {
+                            //            disabled1 = 'disabled';
+                            //        }
+                            //        else {
+                            //            disabled1 = '';
+                            //        }
+                            //        return "<button class='btn btn-primary btn-sm BtnEdit' onclick='EditDetailsForSelectedPO(`" + data + "`)' " + disabled1 + "><i class='fa fa-edit'></i><bitton>";
+                            //    }
+                            //},
+                            { "data": "SrNo" },
+                            { "data": "CompanyName" },
+                            { "data": "GSTNumber" },
+                            { "data": "CompanyAddress" },
+                        ]
+                    });
+                    
+                }
+                $("#tracker-loader").fadeOut("slow");
+            },
+            error: function (errormessage) {
+                alert(errormessage.responseText);
+                $("#tracker-loader").fadeOut("slow");
+            }
+        });
+        $("#tracker-loader").fadeOut("slow");
+        // ShowRightsAgainstUser();
+    }
+
+    function ShowFactorySummary() {
+        $("#tracker-loader").fadeIn("slow");
+        debugger;
+
+        var Userid = $("#txtMainCompID").val();
+
+        var data = { 'Userid':Userid }
+
+        data = JSON.stringify(data);
+
+        $.ajax({
+            type: 'POST',
+            url: '/ManageCompany/GetFactorySummaryDetails',
+            data: data,
+            // data: "",
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            async: true,
+            success: function (jsonResult) {
+
+                if (jsonResult == "[]") {
+                    alert('No Data Found')
+                } else {
+                    $('#tblFactorySummary').DataTable({
+                        "destroy": true,
+                        "bLengthChange": false,
+                        "aaData": jsonResult,
+                        "bPaginate": false,
+                        "bInfo": false,
+                        "dom": 'Bfrtip',
+                        "buttons": [],
+                        "paging": true,
+                        "aaSorting": [],
+                        "columnDefs": [{
+                            "targets": 0,
+                            "orderable": false,
+                        }],
+                        "columns": [
+
+                            //{
+                            //    "data": "Userid",
+                            //    "orderable": false,
+                            //    "render": function (data, type, full, meta) {
+                            //        return "<button class='btn btn-primary btn-sm BtnView' onclick='ViewUserDetails(`" + data + "`)'><i class='fa fa-eye'></i><bitton>";
+                            //    }
+                            //},
+                            //{
+                            //    "data": "PONO",
+                            //    "orderable": false,
+                            //    "render": function (data, type, row, meta) {
+                            //        var disabled1;
+                            //        if (row.IsApproved == true) {
+                            //            disabled1 = 'disabled';
+                            //        }
+                            //        else {
+                            //            disabled1 = '';
+                            //        }
+                            //        return "<button class='btn btn-primary btn-sm BtnEdit' onclick='EditDetailsForSelectedPO(`" + data + "`)' " + disabled1 + "><i class='fa fa-edit'></i><bitton>";
+                            //    }
+                            //},
+                            { "data": "SrNo" },
+                            { "data": "CompanyName" },
+                            { "data": "FactoryName" },
+                            { "data": "FactoryAddress" },
+                        ]
+                    });
+                }
+            },
+            error: function (errormessage) {
+                alert(errormessage.responseText);
+                $("#tracker-loader").fadeOut("slow");
+            }
+        });
+        $("#tracker-loader").fadeOut("slow");
+
+        // ShowRightsAgainstUser();
+    }
+
+    //Validate Company Details
+    function ValidateCompany() {
+
+        //var ddlRegTypesCompany = document.getElementById('ddlRegTypesCompany').value;
+        var txtCompanyGSTNumber = document.getElementById('txtCompanyGSTNumber').value;
+        var txtCompanyName = document.getElementById('txtCompanyName').value;
+        var txtCompanyAddress = document.getElementById('txtCompanyAddress').value;
+        var txtCompanyCity = document.getElementById('txtCompanyCity').value;
+        var txtCompanyState = document.getElementById('txtCompanyState').value;
+        var txtCompanyCountry = document.getElementById('txtCompanyCountry').value;
+        var txtCompanyZipCode = document.getElementById('txtCompanyZipCode').value;
+        var RegType = $("#ddlRegTypesCompany").val();
+
+        var blResult = Boolean;
+        blResult = true;
+
+        if (RegType == "Register") {
+            if (txtCompanyGSTNumber == "") {
+                document.getElementById("txtCompanyGSTNumber").style.borderColor = "red";
+                blResult = blResult && false;
+                if (blResult == false) { alert('Please fill the required fields!'); }
+        return blResult;
+            }
+            else {
+
+                document.getElementById("txtCompanyGSTNumber").style.borderColor = "gainsboro";
+                blResult = true;
+            }
+        }
+        else {
+            if (RegType == "") {
+                document.getElementById("ddlRegTypesCompany").style.borderColor = "red";
+                blResult = blResult && false;
+                if (blResult == false) { alert('Please fill the required fields!'); }
+        return blResult;
+            }
+            else {
+                document.getElementById("ddlRegTypesCompany").style.borderColor = "gainsboro";
+                blResult = true;
+            }
+        }
+        if (txtCompanyName == "") {
+            document.getElementById("txtCompanyName").style.borderColor = "red";
+            blResult = blResult && false;
+            if (blResult == false) { alert('Please fill the required fields!'); }
+        return blResult;
+        }
+        else {
+
+            document.getElementById("txtCompanyName").style.borderColor = "gainsboro";
+            blResult = true;
+        }
+        if (txtCompanyAddress == "") {
+            document.getElementById("txtCompanyAddress").style.borderColor = "red";
+            blResult = blResult && false;
+            if (blResult == false) { alert('Please fill the required fields!'); }
+        return blResult;
+        }
+        else {
+
+            document.getElementById("txtCompanyAddress").style.borderColor = "gainsboro";
+            blResult = true;
+        }
+        if (txtCompanyCity == "") {
+            document.getElementById("txtCompanyCity").style.borderColor = "red";
+            blResult = blResult && false;
+            if (blResult == false) { alert('Please fill the required fields!'); }
+        return blResult;
+        }
+        else {
+
+            document.getElementById("txtCompanyCity").style.borderColor = "gainsboro";
+            blResult = true;
+        }
+        if (txtCompanyState == "") {
+            document.getElementById("txtCompanyState").style.borderColor = "red";
+            blResult = blResult && false;
+            if (blResult == false) { alert('Please fill the required fields!'); }
+        return blResult;
+        }
+        else {
+
+            document.getElementById("txtCompanyState").style.borderColor = "gainsboro";
+            blResult = true;
+        }
+        if (txtCompanyCountry == "") {
+            document.getElementById("txtCompanyCountry").style.borderColor = "red";
+            blResult = blResult && false;
+            if (blResult == false) { alert('Please fill the required fields!'); }
+        return blResult;
+        }
+        else {
+
+            document.getElementById("txtCompanyCountry").style.borderColor = "gainsboro";
+            blResult = true;
+        }
+        if (txtCompanyZipCode == "") {
+            document.getElementById("txtCompanyZipCode").style.borderColor = "red";
+            blResult = blResult && false;
+            if (blResult == false) { alert('Please fill the required fields!'); }
+        return blResult;
+        }
+        else {
+
+            document.getElementById("txtCompanyZipCode").style.borderColor = "gainsboro";
+            blResult = true;
+        }
+
+
+        if (blResult == false) { alert('Please fill the required fields!'); }
+        return blResult;
+
+    };
+
+    //Save Company Details
+    function SaveCompanyDetails() {
+        
+        var IsValid = ValidateCompany();
+
+        var tablearray = [];
+
+        //var ddlRegTypesCompany = "N/A";
+        var ddlRegTypesCompany = document.getElementById('ddlRegTypesCompany').value;
+        var txtCompanyGSTNumber = document.getElementById('txtCompanyGSTNumber').value;
+        var txtCompanyName = document.getElementById('txtCompanyName').value;
+        var txtCompanyAddress = document.getElementById('txtCompanyAddress').value;
+        var txtCompanyCity = document.getElementById('txtCompanyCity').value;
+        var txtCompanyState = document.getElementById('txtCompanyState').value;
+        var txtCompanyCountry = document.getElementById('txtCompanyCountry').value;
+        var txtCompanyZipCode = document.getElementById('txtCompanyZipCode').value;
+
+        if (ddlRegTypesCompany == "" || ddlRegTypesCompany == undefined) { ddlRegTypesCompany = "N/A"; }
+        if (txtCompanyGSTNumber == "" || txtCompanyGSTNumber == undefined) { txtCompanyGSTNumber = "N/A"; }
+
+        tablearray.push({
+            'RegTypes': ddlRegTypesCompany, 'GSTNumber': txtCompanyGSTNumber, 'CompanyName': txtCompanyName, 'CompanyAddress': txtCompanyAddress, 'CompanyCity': txtCompanyCity,
+            'CompanyState': txtCompanyState, 'CompanyCountry': txtCompanyCountry, 'CompanyZipCode': txtCompanyZipCode
+        })
+
+        var data1 = { 'CompanyDetails': tablearray }
+
+        var data = JSON.stringify(data1);
+        // alert(data);
+        if (IsValid == true) {
+            $("#tracker-loader").fadeIn("slow");
+
+            $.ajax({
+                url: "/ManageCompany/SaveSubCompanyDetails",
+                data: data,
+                type: "POST",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (Data) {
+
+                    if (Data == 'Invalid') {
+                        alert(Data);
+                        $("#tracker-loader").fadeOut("slow");
+                        return false;
+                    } else {
+                        alert("Company Added Successfully.");
+                        //SendUserIdPasswordOnMail();
+                        document.location = '@Url.Action("ManageCompany", "ManageCompany")';
+                    }
+
+                    $("#tracker-loader").fadeOut("slow");
+                },
+                error: function (errormessage) {
+                    alert("error");
+                    alert(errormessage.responseText);
+                    console.log(errormessage.responseText);
+                    $("#tracker-loader").fadeOut("slow");
+                }
+            });
+
+        }
+    }
+
+    //Validate Factory Details
+    function ValidateFactory() {
+
+        //var ddlRegTypes = document.getElementById('ddlRegTypes').value;
+        var ddlCompanyList = document.getElementById('ddlCompanyList').value;
+        var txtFactoryGSTNumber = document.getElementById('txtFactoryGSTNumber').value;
+        var txtFactoryName = document.getElementById('txtFactoryName').value;
+        var txtFactoryAddress = document.getElementById('txtFactoryAddress').value;
+        var txtFactoryCity = document.getElementById('txtFactoryCity').value;
+        var txtFactoryState = document.getElementById('txtFactoryState').value;
+        var txtFactoryCountry = document.getElementById('txtFactoryCountry').value;
+        var txtFactoryZipCode = document.getElementById('txtFactoryZipCode').value;
+        var RegType = $("#ddlRegTypes").val();
+
+        var blResult = Boolean;
+        blResult = true;
+
+        if (RegType == "Register") {
+            if (txtFactoryGSTNumber == "") {
+                document.getElementById("txtFactoryGSTNumber").style.borderColor = "red";
+                blResult = blResult && false;
+                if (blResult == false) { alert('Please fill the required fields!'); }
+        return blResult;
+            }
+            else {
+
+                document.getElementById("txtFactoryGSTNumber").style.borderColor = "gainsboro";
+                blResult = true;
+            }
+        }
+        else {
+            if (RegType == "") {
+                document.getElementById("ddlRegTypes").style.borderColor = "red";
+                blResult = blResult && false;
+                if (blResult == false) { alert('Please fill the required fields!'); }
+        return blResult;
+            }
+            else {
+                document.getElementById("ddlRegTypes").style.borderColor = "gainsboro";
+                blResult = true;
+            }
+        }
+        if (ddlCompanyList == "" || ddlCompanyList == undefined) {
+            document.getElementById("ddlCompanyList").style.borderColor = "red";
+            blResult = blResult && false;
+            if (blResult == false) { alert('Please fill the required fields!'); }
+        return blResult;
+        }
+        else {
+
+            document.getElementById("ddlCompanyList").style.borderColor = "gainsboro";
+            blResult = true;
+        }
+        if (txtFactoryName == "") {
+            document.getElementById("txtFactoryName").style.borderColor = "red";
+            blResult = blResult && false;
+            if (blResult == false) { alert('Please fill the required fields!'); }
+        return blResult;
+        }
+        else {
+
+            document.getElementById("txtFactoryName").style.borderColor = "gainsboro";
+            blResult = true;
+        }
+        if (txtFactoryAddress == "") {
+            document.getElementById("txtFactoryAddress").style.borderColor = "red";
+            blResult = blResult && false;
+            if (blResult == false) { alert('Please fill the required fields!'); }
+        return blResult;
+        }
+        else {
+
+            document.getElementById("txtFactoryAddress").style.borderColor = "gainsboro";
+            blResult = true;
+        }
+        if (txtFactoryCity == "") {
+            document.getElementById("txtFactoryCity").style.borderColor = "red";
+            blResult = blResult && false;
+            if (blResult == false) { alert('Please fill the required fields!'); }
+        return blResult;
+        }
+        else {
+
+            document.getElementById("txtFactoryCity").style.borderColor = "gainsboro";
+            blResult = true;
+        }
+        if (txtFactoryState == "") {
+            document.getElementById("txtFactoryState").style.borderColor = "red";
+            blResult = blResult && false;
+            if (blResult == false) { alert('Please fill the required fields!'); }
+        return blResult;
+        }
+        else {
+
+            document.getElementById("txtFactoryState").style.borderColor = "gainsboro";
+            blResult = true;
+        }
+        if (txtFactoryCountry == "") {
+            document.getElementById("txtFactoryCountry").style.borderColor = "red";
+            blResult = blResult && false;
+            if (blResult == false) { alert('Please fill the required fields!'); }
+            return blResult;
+        }
+        else {
+
+            document.getElementById("txtFactoryCountry").style.borderColor = "gainsboro";
+            blResult = true;
+        }
+        if (txtFactoryZipCode == "") {
+            document.getElementById("txtFactoryZipCode").style.borderColor = "red";
+            blResult = blResult && false;
+            if (blResult == false) { alert('Please fill the required fields!'); }
+        return blResult;
+        }
+        else {
+
+            document.getElementById("txtFactoryZipCode").style.borderColor = "gainsboro";
+            blResult = true;
+        }
+
+
+        if (blResult == false) { alert('Please fill the required fields!'); }
+        return blResult;
+
+    };
+
+    //Save Factory Details
+    function SaveFactoryDetails() {
+        $("#tracker-loader").fadeIn("slow");
+        var IsValid = ValidateFactory();
+
+        var tablearray = [];
+
+        //var ddlRegTypes = "N/A";
+        var ddlRegTypes = document.getElementById('ddlRegTypes').value;
+        var ddlCompanyList = document.getElementById('ddlCompanyList').value;
+        var txtFactoryGSTNumber = document.getElementById('txtFactoryGSTNumber').value;
+        var txtFactoryName = document.getElementById('txtFactoryName').value;
+        var txtFactoryAddress = document.getElementById('txtFactoryAddress').value;
+        var txtFactoryCity = document.getElementById('txtFactoryCity').value;
+        var txtFactoryState = document.getElementById('txtFactoryState').value;
+        var txtFactoryCountry = document.getElementById('txtFactoryCountry').value;
+        var txtFactoryZipCode = document.getElementById('txtFactoryZipCode').value;
+
+        if (ddlRegTypes == "" || ddlRegTypes == undefined) { ddlRegTypes = "N/A"; }
+        if (txtFactoryGSTNumber == "" || txtFactoryGSTNumber == undefined) { txtFactoryGSTNumber = "N/A"; }
+
+        tablearray.push({
+            'RegTypes': ddlRegTypes, 'CompID': ddlCompanyList, 'GSTNumber': txtFactoryGSTNumber, 'FactoryName': txtFactoryName,
+            'FactoryAddress': txtFactoryAddress,'FactoryCity': txtFactoryCity, 'FactoryState': txtFactoryState, 'FactoryCountry': txtFactoryCountry, 'FactoryZipCode': txtFactoryZipCode
+        })
+
+        var data1 = { 'FactoryDetails': tablearray }
+
+        var data = JSON.stringify(data1);
+        // alert(data);
+
+        if (IsValid == true) {
+
+            $.ajax({
+                url: "/ManageCompany/SaveFactoryDetails",
+                data: data,
+                type: "POST",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (Data) {
+
+                    if (Data != "valid") {
+                        alert(Data);
+                        $("#tracker-loader").fadeOut("slow");
+                        return false;
+                    } else {
+                        alert("Factory Added Successfully.");
+                        //SendUserIdPasswordOnMail();
+                        //document.location = '@Url.Action("ManageFactory", "ManageCompany")';
+                        BackToFactorySummary();
+                    }
+
+                    $("#tracker-loader").fadeOut("slow");
+                },
+                error: function (errormessage) {
+                    alert("error");
+                    alert(errormessage.responseText);
+                    console.log(errormessage.responseText);
+                    $("#tracker-loader").fadeOut("slow");
+                }
+            });
+
+        }
+    }
+
+    function EditJo(UserID) {
+        debugger;
+        $("#divCreate").show();
+        $("#divCreateSummary").hide();
+        if (UserID == "") {
+            alert("Please Select Valid Jo Number");
+            return;
+        }
+
+        var data1 = { "UserID": UserID };
+
+        var data = JSON.stringify(data1);
+
+        $.ajax({
+            type: 'POST',
+            url: '/ManageUser/GetLocationDetails',
+            data: data,
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (data) {
+                debugger;
+                $('#txtUsername').val(data[0].firstname);
+                $('#txtlastname').val(data[0].lastname);
+                $('#ddlgender').val(data[0].gender);
+                ///$('#txtDOB').val(data[0].DOB);
+                $('#txtemployeeid').val(data[0].employeeid);
+                $('#txtPassword').val(data[0].password);
+                $('#ddldepartment').val(data[0].department);
+                $('#ddlUserType').val(data[0].userType);
+                $('#txtMailID').val(data[0].emailid);
+                $('#txtPasswordemail').val(data[0].passEmail);
+                $('#txtContactNo').val(data[0].Contact);
+                $('#chkIsActiveEdit').val(data[0].isactive);
+                $('#txtUserid').val(data[0].UseriDN);
+            },
+            error: function (errormessage) {
+                alert(errormessage.responseText);
+                $("#tracker-loader").fadeOut("slow");
+            }
+        });
+    }
+</script>

@@ -1,0 +1,171 @@
+﻿<div class="page-header">
+    <h4 class="page-title">Booking Details</h4>
+    <ol class="breadcrumb" id="IsDirect">
+        <li class="breadcrumb-item">
+            <a onclick="GetBack()" class="btn btn-primary btn-primary text-right" style="align-content:center;color:white" title="Back" data-toggle="tooltip" data-placement="bottom">
+                <i class="fa fa-arrow-left"></i>
+            </a>
+        </li>
+    </ol>
+</div>
+
+<div class="card wow zoomIn" data-wow-duration="1s" data-wow-delay="0.2s">
+    <div class="card-body">
+        <div class="row mt-5">
+            <div class="col-6">
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-4">
+                            <label class="form-label mt-1">Booking No :</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-4">
+                            @Html.TextBox("BookingNo", null, new { @class = "form-control", @id = "BookingNo", name = "BookingNo", @Value = @ViewBag.BookingNo, @readonly = "readonly" })
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="th_Background table table-striped table-bordered text-center text-nowrap" style="width:100%" id="tblDetailsSummary">
+                    <thead class="bg-primary">
+                        <tr>
+                            <th>Container Size</th>
+                            <th>Container Type</th>
+                            <th>Weight</th>
+                            <th>Container No</th>
+                            <th>Pickup Date</th>
+                            <th>Dropoff Date</th>
+                            <th>Driver</th>
+                            <th>Vehicle</th>
+                        </tr>
+                    </thead>
+                </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        LoadDetails();
+    });
+
+    function GetBack() {
+        document.location = '@Url.Action("CustomerBookings", "CustomerDetails")';
+    }
+
+    function LoadDetails() {
+        var BN = document.getElementById("BookingNo").value;
+
+        var data = { 'BN': BN }
+        data = JSON.stringify(data);
+
+        $.ajax({
+            url: "/CustomerDetails/GetBookingDetails",
+            data: data,
+            type: "POST",
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (response) {
+                ContainerM = response;
+                $('#tblDetailsSummary').DataTable({
+                    "destroy": true,
+                    "bLengthChange": false,
+                    "aaData": response,
+                    "bPaginate": true,
+                    "pageLength": 25,
+                    "bInfo": true,
+                    "paging": true,
+                    order: [],
+                    "searching": true,
+                    "columns": [
+                        { "data": "ContainerSize" },
+                        { "data": "ContainerType" },
+                        { "data": "Weight" },
+                        {
+                            "data": "ContainerNo",
+                            "orderable": false,
+                            "render": function (data, type, row, meta) {
+                                if (type === 'display') {
+                                    if (row.ContainerNo == "") {
+                                        data = "<div class=\"text-center\">-</div>"
+                                    }
+                                    else {
+                                        data = row.ContainerNo
+                                    }
+                                }
+                                return data;
+                            }
+                        },
+                        {
+                            "data": "PickUpDate",
+                            "orderable": false,
+                            "render": function (data, type, row, meta) {
+                                if (type === 'display') {
+                                    if (row.PickUpDate == "") {
+                                        data = "<div class=\"text-center\">-</div>"
+                                    }
+                                    else {
+                                        data = row.PickUpDate
+                                    }
+                                }
+                                return data;
+                            }
+                        },
+                        {
+                            "data": "DropOffDate",
+                            "orderable": false,
+                            "render": function (data, type, row, meta) {
+                                if (type === 'display') {
+                                    if (row.DropOffDate == "") {
+                                        data = "<div class=\"text-center\">-</div>"
+                                    }
+                                    else {
+                                        data = row.DropOffDate
+                                    }
+                                }
+                                return data;
+                            }
+                        },
+                        {
+                            "data": "Driver",
+                            "orderable": false,
+                            "render": function (data, type, row, meta) {
+                                if (type === 'display') {
+                                    if (row.Driver == "") {
+                                        data = "<div class=\"text-center\">-</div>"
+                                    }
+                                    else {
+                                        data = row.Driver
+                                    }
+                                }
+                                return data;
+                            }
+                        },
+                        {
+                            "data": "Vehicle",
+                            "orderable": false,
+                            "render": function (data, type, row, meta) {
+                                if (type === 'display') {
+                                    if (row.Vehicle == "") {
+                                        data = "<div class=\"text-center\">-</div>"
+                                    }
+                                    else {
+                                        data = row.Vehicle
+                                    }
+                                }
+                                return data;
+                            }
+                        }
+                    ],
+                    mark: true
+                });
+            },
+            error: function (error) {
+                alert(error.responseText);
+            }
+        });
+    }
+</script>

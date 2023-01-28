@@ -1,0 +1,159 @@
+﻿<div class="page-header">
+    <h4 class="page-title">Documents</h4>
+    <ol class="breadcrumb" id="IsDirect">
+        <li class="breadcrumb-item">
+            <a onclick="GetBack()" class="btn btn-primary btn-primary text-right" style="align-content:center;color:white" title="Back" data-toggle="tooltip" data-placement="bottom">
+                <i class="fa fa-arrow-left"></i>
+            </a>
+        </li>
+    </ol>
+</div>
+<div class="card">
+    <div class="card-body">
+        <div class="mt-5">
+            <div class="table-responsive">
+                <table class="table table-bordered text-center table-hover w-100 card-table m-0 text-nowrap" id="tblDocuments">
+                    <thead class="bg-primary">
+                        <tr>
+                            <th>SrNo</th>
+                            <th>Document</th>
+                            <th>View</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row">1</th>
+                            <td>E- Delivery Order</td>
+                            <td><button class="btn btn-blue" title="Upload" data-toggle="tooltip" data-placement="bottom" onclick="addDeliveryAttachment()"><i class="fa fa-upload"></i></button></td>
+                        </tr>
+                        <tr>
+                            <th scope="row">2</th>
+                            <td>E- Lorry Receipt</td>
+                            <td><button class="btn btn-primary" title="View" data-toggle="tooltip" data-placement="bottom" onclick="showLorryAttachment()"><i class="fa fa-eye"></i></button></td>
+                        </tr>
+                        <tr>
+                            <th scope="row">3</th>
+                            <td>Empty Offloading Receipt</td>
+                            <td><button class="btn btn-primary" title="View" data-toggle="tooltip" data-placement="bottom" onclick="showOffloadingAttachment()"><i class="fa fa-eye"></i></button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="float-right m-5">
+                <button class="btn btn-success mr-5" title="Additional Documents" data-toggle="tooltip" data-placement="bottom" onclick="addAdditionalAttachment()">Additional Documents</button>
+            </div>
+        </div>
+
+        <div class="modal fade" id="attachmentModal" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog modal-xl" role="document">
+                <div class="modal-content" id='attachmentModalContent'></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var DocId = 0;
+    var BookingId = 0;
+    var BookingNo = "@ViewBag.BookingNo";
+
+    var runningNo = 1;
+
+    var deliveryAttachment = [];
+    var deliveryAttachment;
+    var totalDeliveryAttchment = [];
+    var masterDeliveryAttachment = [];
+
+    var additionalAttachment = [];
+    var additionalAttachment;
+    var totalAttchment = [];
+    var masterAttachment = [];
+
+    function GetBack() {
+        document.location = '@Url.Action("BookingDocuments", "Booking")';
+    }
+
+    function addDeliveryAttachment() {
+        $.ajax({
+            type: "POST",
+            url: "/Booking/DeliveryAttachment",
+            contentType: "application/json; charset=utf-8",
+            success: function (response) {
+                $('#attachmentModalContent').html(response);
+                $('#attachmentModal').modal('show');
+            },
+            failure: function (response) {
+                alert(response);
+                alert(response.responseText);
+            },
+            error: function (response) {
+                alert(response.responseText);
+            }
+        })
+    }
+
+    function showLorryAttachment() {
+        var data = { 'BookingNo': BookingNo };
+        data = JSON.stringify(data);
+
+        $.ajax({
+            type: "POST",
+            url: "/Booking/ShowLorryAttachment",
+            data: data,
+            contentType: "application/json; charset=utf-8",
+            success: function (response) {
+                $('#attachmentModalContent').html(response);
+                $('#attachmentModal').modal('show');
+            },
+            failure: function (response) {
+                alert(response);
+                alert(response.responseText);
+            },
+            error: function (response) {
+                alert(response.responseText);
+            }
+        })
+    }
+
+    function showOffloadingAttachment() {
+        var data = { 'BookingNo': BookingNo };
+        data = JSON.stringify(data);
+
+        $.ajax({
+            type: "POST",
+            url: "/Booking/ShowOffloadingAttachment",
+            data: data,
+            contentType: "application/json; charset=utf-8",
+            success: function (response) {
+                $('#attachmentModalContent').html(response);
+                $('#attachmentModal').modal('show');
+            },
+            failure: function (response) {
+                alert(response);
+                alert(response.responseText);
+            },
+            error: function (response) {
+                alert(response.responseText);
+            }
+        })
+    }
+
+    function addAdditionalAttachment() {
+        $.ajax({
+            type: "POST",
+            url: "/Booking/AdditionalAttachment",
+            contentType: "application/json; charset=utf-8",
+            success: function (response) {
+                $('#attachmentModalContent').html(response);
+                $('#attachmentModal').modal('show');
+            },
+            failure: function (response) {
+                alert(response);
+                alert(response.responseText);
+            },
+            error: function (response) {
+                alert(response.responseText);
+            }
+        })
+    }
+</script>

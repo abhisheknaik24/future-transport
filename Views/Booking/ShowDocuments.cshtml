@@ -1,0 +1,131 @@
+﻿<div>
+    <div class="modal-header">
+        <h5 class="modal-title">Documents</h5>
+        <label id="MSNoFile" style="visibility:hidden"></label>
+        <button type="button" class="close" id="isClosed" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <form>
+            <div class="form-group">
+                <div class="table-responsive">
+                    <table id="documentAttachmentTable" class="table table-striped table-bordered" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th class="wd-15p sorting">Document Name</th>
+                                <th style="width:15px"></th>
+                            </tr>
+                        </thead>
+                        <tbody style="box-sizing :border-box;"></tbody>
+                    </table>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <label hidden id="load"></label>
+        <button class="btn btn-secondary pull-right" id="isClosed" data-dismiss="modal" aria-label="Close">Close</button>
+    </div>
+</div>
+
+@using (Html.BeginForm("DownloadDocuments", "Booking", FormMethod.Post))
+{
+    <input type="hidden" id="hiddenFile" name="id" />
+    <button type="submit" class="btn btn-primary" id="btnDownload" style="display:none">Download</button>
+}
+
+<script>
+    var BookingNo = "";
+    var DocName = "";
+    var Filepath = "";
+    var ContentType = "";
+    var table = [];
+
+    $(document).ready(function () {
+        BookingNo = "@ViewBag.BookingNo";
+        load();
+    });
+
+    function load() {
+        var data = { 'DD': BookingNo }
+        data = JSON.stringify(data);
+        debugger;
+        runningNo++;
+        $.ajax({
+            url: "/Booking/GetDocuments",
+            data: data,
+            type: "POST",
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (response) {
+                for (i = 0; i < response.length; i++) {
+                    var element = {};
+                    element.runningNo = response[i].runningNo;
+                    element.DocName = response[i].DisplayDocName;
+                    element.FilePath = response[i].DisplayFilePath;
+                    element.ContentType = response[i].DisplayContentType;
+                    table.push(element);
+                }
+
+                $('#documentAttachmentTable').DataTable({
+                    "destroy": true,
+                    "bLengthChange": false,
+                    "aaData": response,
+                    "bPaginate": true,
+                    "pageLength": 10,
+                    "bInfo": true,
+                    "paging": true,
+                    order: [],
+                    "searching": true,
+                    "columns": [
+                        { "data": "DisplayDocName" },
+                        {
+                            "data": "DisplayFilePath",
+                            "render": function (data, type, row, meta) {
+                                if (type === 'display') {
+                                    data = '<a class="btn btn-primary" onclick="downloadAttachment(' + row.runningNo + ')"><i class="fa fa-download"></i></a>';
+                                }
+                                return data;
+                            }
+                        },
+                    ],
+                });
+            },
+            error: function (error) {
+                alert(error.responseText);
+            }
+        });
+    }
+
+    function downloadAttachment(runningNo) {
+        var no = runningNo;
+        var docnameA, FilepathA, contentTypeA;
+        for (i = 0; i < table.length; i++) {
+            if (table[i].runningNo == no) {
+                docnameA = table[i].DocName;
+                FilepathA = table[i].FilePath;
+                contentTypeA = table[i].ContentType;
+            }
+        }
+
+        var id = 0;
+        var data = { 'DocNameA': docnameA, 'FilepathA': FilepathA, 'ContentTypeA': contentTypeA }
+        data = JSON.stringify(data);
+         debugger
+        $.ajax({
+            url: '/Booking/StoreDocuments',
+            type: "POST",
+            contentType: "application/json; charset=utf-8",
+            data: data,
+            success: function (Data) {
+                id = Data;
+            },
+            error: function (error) {
+                alert(error.responseText);
+            }
+        });
+        $("#hiddenFile").val(id);
+        $("#btnDownload")[0].click();
+    }
+</script>

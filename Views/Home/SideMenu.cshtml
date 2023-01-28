@@ -1,0 +1,16 @@
+﻿@model IEnumerable<FutureTransportEntities.BusinessEntities.MenuModel>
+
+@{
+    @GetTreeMenus(Session["MenuList"] as IEnumerable<FutureTransportEntities.BusinessEntities.MenuModel>, 0) }
+
+@helper GetTreeMenus(IEnumerable<FutureTransportEntities.BusinessEntities.MenuModel> menuList, Nullable<int> MenuId)
+{
+    foreach (var i in menuList)
+    {
+        <li>
+            <a href="/@i.Controller/@i.Action">
+                <i class="@i.MenuIcon mr-2"></i><span>@i.MenuName</span>
+            </a>
+        </li>
+    }
+}

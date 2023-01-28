@@ -1,0 +1,742 @@
+﻿
+@{
+    ViewBag.Title = "Live Bookings";
+    Layout = "~/Views/Shared/_LayoutDashboard.cshtml";
+}
+
+<div id="BookingEntry">
+    <div class="page-header">
+        <h4 class="page-title">Booking</h4>
+        <button class="btn btn-primary" title="Summary" data-toggle="tooltip" data-placement="bottom" onclick="ShowSummary()"><i class="fa fa-file"></i></button>
+    </div>
+    <div class="card">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-4">
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-4">
+                                <label class="form-label mt-1">Shipment Type :</label>
+                            </div>
+                            <div class="col-6">
+                                <select id="ShipmentType" class="form-control">
+                                    <option value="" selected>--Select--</option>
+                                    <option value="Import">Import</option>
+                                    <option value="Export">Export</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="row">
+                        <div class="col-4">
+                            <label class="form-label mt-1">Plan Date :</label>
+                        </div>
+                        <div class="col-6">
+                            @Html.TextBox("PlanDate", null, new { @class = "form-control datePicker", @id = "PlanDate", name = "PlanDate", @Value = DateTime.Now.ToString("dd MMM yyyy") })
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-4">
+                    <div class="row">
+                        <div class="col-4">
+                            <label class="form-label mt-1">Pickup :</label>
+                        </div>
+                        <div class="col-6">
+                            @Html.TextBox("PickUpLocation", null, new { @class = "form-control", @id = "PickUpLocation", name = "PickUpLocation", autocomplete = "on" })
+                        </div>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="row">
+                        <div class="col-4">
+                            <label class="form-label mt-1">Dropoff :</label>
+                        </div>
+                        <div class="col-6">
+                            @Html.TextBox("DropOffLocation", null, new { @class = "form-control", @id = "DropOffLocation", name = "DropOffLocation", autocomplete = "on" })
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-10">
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-2">
+                                <label class="form-label mt-1">Container Size :</label>
+                            </div>
+                            <div class="col-2">
+                                <label class="form-label mt-1">Container Type :</label>
+                            </div>
+                            <div class="col-2">
+                                <label class="form-label mt-1">Weight :</label>
+                            </div>
+                            <div class="offset-2 col-2 ">
+                                <label class="form-label mt-1">Quantity :</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-10">
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-2">
+                                @Html.TextBox("ContainerSizeTwenty", null, new { @class = "form-control", @id = "ContainerSizeTwenty", name = "ContainerSizeTwenty", @Value = "20", @readonly = "readonly" })
+
+                            </div>
+                            <div class="col-2">
+                                @Html.DropDownList("CTDropdownTwenty", (IEnumerable<SelectListItem>)ViewBag.CTDropdown, "--Select--", new { @class = "form-control custom-select", @id = "CTDropdownTwenty", name = "CTDropdownTwenty", autocomplete = "off" })
+                            </div>
+                            <div class="col-2">
+                                @Html.TextBox("WeightTwenty", null, new { @type = "number", @class = "form-control changeFloat", @id = "WeightTwenty", name = "WeightTwenty", autocomplete = "off" })
+                            </div>
+                            <div class="col-2">
+                                <select id="WeightTwentyUnit" class="form-control">
+                                    <option value="KG" selected>Kg</option>
+                                    <option value="MT">Metric Ton</option>
+                                </select>
+                            </div>
+                            <div class="col-2">
+                                @Html.TextBox("QuantityTwenty", null, new { @type = "number", @class = "form-control", @id = "QuantityTwenty", name = "QuantityTwenty", autocomplete = "off" })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-10">
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-2">
+                                @Html.TextBox("ContainerSizeFourty", null, new { @class = "form-control", @id = "ContainerSizeFourty", name = "ContainerSizeFourty", @Value = "40", @readonly = "readonly" })
+
+                            </div>
+                            <div class="col-2">
+                                @Html.DropDownList("CTDropdownFourty", (IEnumerable<SelectListItem>)ViewBag.CTDropdown, "--Select--", new { @class = "form-control custom-select", @id = "CTDropdownFourty", name = "CTDropdownFourty", autocomplete = "off" })
+                            </div>
+                            <div class="col-2">
+                                @Html.TextBox("WeightFourty", null, new { @type = "number", @class = "form-control changeFloat", @id = "WeightFourty", name = "WeightFourty", autocomplete = "off" })
+                            </div>
+                            <div class="col-2">
+                                <select id="WeightFourtyUnit" class="form-control">
+                                    <option value="KG" selected>Kg</option>
+                                    <option value="MT">Metric Ton</option>
+                                </select>
+                            </div>
+                            <div class="col-2">
+                                @Html.TextBox("QuantityFourty", null, new { @type = "number", @class = "form-control", @id = "QuantityFourty", name = "QuantityFourty", autocomplete = "off" })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-10">
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-2">
+                                @Html.TextBox("ContainerSizeFourtyFive", null, new { @class = "form-control", @id = "ContainerSizeFourtyFive", name = "ContainerSizeFourtyFive", @Value = "45", @readonly = "readonly" })
+
+                            </div>
+                            <div class="col-2">
+                                @Html.DropDownList("CTDropdownFourtyFive", (IEnumerable<SelectListItem>)ViewBag.CTDropdown, "--Select--", new { @class = "form-control custom-select", @id = "CTDropdownFourtyFive", name = "CTDropdownFourtyFive", autocomplete = "off" })
+                            </div>
+                            <div class="col-2">
+                                @Html.TextBox("WeightFourtyFive", null, new { @type = "number", @class = "form-control changeFloat", @id = "WeightFourtyFive", name = "WeightFourtyFive", autocomplete = "off" })
+                            </div>
+                            <div class="col-2">
+                                <select id="WeightFourtyFiveUnit" class="form-control">
+                                    <option value="KG" selected>Kg</option>
+                                    <option value="MT">Metric Ton</option>
+                                </select>
+                            </div>
+                            <div class="col-2">
+                                @Html.TextBox("QuantityFourtyFive", null, new { @type = "number", @class = "form-control", @id = "QuantityFourtyFive", name = "QuantityFourtyFive", autocomplete = "off" })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-12 col-md-4">
+                    <button class="btn btn-success" title="Save" data-toggle="tooltip" data-placement="bottom" onclick="ConfirmBooking()"><i class="fa fa-save"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="BookingSummary">
+    <div class="page-header">
+        <h4 class="page-title">Booking Summary</h4>
+        <button class="btn btn-primary" title="Back" data-toggle="tooltip" data-placement="bottom" onclick="ShowEntry()"><i class="fa fa-arrow-left"></i></button>
+    </div>
+    <div class="card">
+        <div class="card-body">
+            <div class="row no-gutters mt-5">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <div class="row no-gutters">
+                            <div class="col-md-5">
+                                <label class="form-label mt-2">Shipment Type :</label>
+                            </div>
+                            <div class="col-md-5">
+                                <select id="ShipmentTypeS" class="form-control">
+                                    <option value="Import">Import</option>
+                                    <option value="Export">Export</option>
+                                    <option value="0" selected>Both</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <button class="btn btn-warning" title="Search" data-toggle="tooltip" data-placement="bottom" onclick="Load()"><i class="fa fa-search"></i></button>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="th_Background table table-striped table-bordered text-center text-nowrap" style="width:100%" id="tblSummary">
+                    <thead class="bg-primary">
+                        <tr>
+                            <th>Action</th>
+                            <th>Booking No</th>
+                            <th>Best Rate</th>
+                            <th>Booking Date & Time</th>
+                            <th>Plan Date</th>
+                            <th>20</th>
+                            <th>40</th>
+                            <th>45</th>
+                            <th>Pickup Location</th>
+                            <th>Dropoff Location</th>
+                            <th>Time (of BID)</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="modalConfirmBooking" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirm Booking</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>are you check all the fields before confirm the booking?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">No</button>
+                <button type="button" class="btn btn-success" onclick="Save()">Yes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="modalStatus" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Do you want to accept this BID</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" id="isAccepted">Accept</button>
+                <button type="button" class="btn btn-danger" id="isRejected">Reject</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="modalDelete" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Do you want to delete from market?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" id="isDeleted">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var BookingId = 0;
+    var BookingNo = "0";
+    var UserId = 0;
+
+    $(document).ready(function () {
+        BookingId = "@ViewBag.BookingId";
+        BookingNo = "@ViewBag.BookingNo";
+        UserId = "@ViewBag.UserId";
+        Load();
+
+        $(".changeFloat").bind('change', function () {
+            var value = $(this).val();
+            $(this).val(parseFloat(value).toFixed(2));
+        });
+
+        $("#BookingSummary").hide();
+    });
+
+    $(function () {
+        $(".datePicker").datepicker({
+            autoclose: true,
+            todayHighlight: true,
+            format: 'dd M yyyy',
+            language: "tr",
+            changeMonth: true,
+            changeYear: true,
+        });
+    });
+
+    $("#PlanDate").on('change', function () {
+        var today = new Date()
+        var yesterday = new Date(today)
+        yesterday.setDate(yesterday.getDate() - 1)
+        var date = Date.parse($("#PlanDate").val());
+        if (date < yesterday) {
+            Swal.fire({
+                title: 'Error',
+                text: "Selected date must be today or greater than today date!",
+                icon: 'error'
+            });
+            document.getElementById('PlanDate').style.borderColor = "red";
+            $("#PlanDate").val("");
+        } else {
+            document.getElementById('PlanDate').style.borderColor = "Gainsboro";
+        }
+    });
+
+    function ConfirmBooking() {
+        var ShipmentType = document.getElementById('ShipmentType').value;
+        var PlanDate = document.getElementById('PlanDate').value;
+        var PickUpLocation = document.getElementById('PickUpLocation').value;
+        var DropOffLocation = document.getElementById('DropOffLocation').value;
+
+        if (ShipmentType == "") {
+            Swal.fire({
+                title: 'Error',
+                text: "Please select shipment type!",
+                icon: 'error'
+            });
+            return false;
+        }
+        if (PlanDate == "") {
+            Swal.fire({
+                title: 'Error',
+                text: "Please select plandate!",
+                icon: 'error'
+            });
+            return false;
+        }
+        if (PickUpLocation == "") {
+            Swal.fire({
+                title: 'Error',
+                text: "Please enter pickup location!",
+                icon: 'error'
+            });
+            return false;
+        }
+        if (DropOffLocation == "") {
+            Swal.fire({
+                title: 'Error',
+                text: "Please enter dropOff location!",
+                icon: 'error'
+            });
+            return false;
+        }
+        $("#modalConfirmBooking").modal('show');
+    }
+
+    function Save() {
+        var table = [];
+        var BI = BookingId;
+        var BN = BookingNo
+        var UI = UserId;
+        var ShipmentType = document.getElementById('ShipmentType').value;
+        var PlanDate = document.getElementById('PlanDate').value;
+        var PickUpLocation = document.getElementById('PickUpLocation').value;
+        var DropOffLocation = document.getElementById('DropOffLocation').value;
+
+        var ContainerSizeTwenty = document.getElementById('ContainerSizeTwenty').value;
+        var ContainerTypeTwenty = document.getElementById('CTDropdownTwenty').value;
+        if (ContainerTypeTwenty == "" || ContainerTypeTwenty == 0 || ContainerTypeTwenty == undefined) {
+            ContainerTypeTwenty = 0;
+        }
+        var WeightTwenty = document.getElementById('WeightTwenty').value;
+        if (WeightTwenty == "" || WeightTwenty == 0 || WeightTwenty == undefined) {
+            WeightTwenty = 0;
+        }
+        var WeightTwentyUnit = document.getElementById('WeightTwentyUnit').value;
+        var QuantityTwenty = document.getElementById('QuantityTwenty').value;
+        if (QuantityTwenty == "" || QuantityTwenty == 0 || QuantityTwenty == undefined) {
+            QuantityTwenty = 0;
+        }
+
+        var ContainerSizeFourty = document.getElementById('ContainerSizeFourty').value;
+        var ContainerTypeFourty = document.getElementById('CTDropdownFourty').value;
+        if (ContainerTypeFourty == "" || ContainerTypeFourty == 0 || ContainerTypeFourty == undefined) {
+            ContainerTypeFourty = 0;
+        }
+        var WeightFourty = document.getElementById('WeightFourty').value;
+        if (WeightFourty == "" || WeightFourty == 0 || WeightFourty == undefined) {
+            WeightFourty = 0;
+        }
+        var WeightFourtyUnit = document.getElementById('WeightFourtyUnit').value;
+        var QuantityFourty = document.getElementById('QuantityFourty').value;
+        if (QuantityFourty == "" || QuantityFourty == 0 || QuantityFourty == undefined) {
+            QuantityFourty = 0;
+        }
+
+        var ContainerSizeFourtyFive = document.getElementById('ContainerSizeFourtyFive').value;
+        var ContainerTypeFourtyFive = document.getElementById('CTDropdownFourtyFive').value;
+        if (ContainerTypeFourtyFive == "" || ContainerTypeFourtyFive == 0 || ContainerTypeFourtyFive == undefined) {
+            ContainerTypeFourtyFive = 0;
+        }
+        var WeightFourtyFive = document.getElementById('WeightFourtyFive').value;
+        if (WeightFourtyFive == "" || WeightFourtyFive == 0 || WeightFourtyFive == undefined) {
+            WeightFourtyFive = 0;
+        }
+        var WeightFourtyFiveUnit = document.getElementById('WeightFourtyFiveUnit').value;
+        var QuantityFourtyFive = document.getElementById('QuantityFourtyFive').value;
+        if (QuantityFourtyFive == "" || QuantityFourtyFive == 0 || QuantityFourtyFive == undefined) {
+            QuantityFourtyFive = 0;
+        }
+
+        table.push({
+            'BookingId': BI, 'BookingNo': BN, 'UserId': UI,
+            'ShipmentType': ShipmentType, 'PlanDate': PlanDate,
+            'PickUpLocation': PickUpLocation, 'DropOffLocation': DropOffLocation,
+
+            'ContainerSizeTwenty': ContainerSizeTwenty, 'ContainerTypeTwenty': ContainerTypeTwenty,
+            'WeightTwenty': WeightTwenty, 'WeightTwentyUnit': WeightTwentyUnit, 'QuantityTwenty': QuantityTwenty,
+
+            'ContainerSizeFourty': ContainerSizeFourty, 'ContainerTypeFourty': ContainerTypeFourty,
+            'WeightFourty': WeightFourty, 'WeightFourtyUnit': WeightFourtyUnit, 'QuantityFourty': QuantityFourty,
+
+            'ContainerSizeFourtyFive': ContainerSizeFourtyFive, 'ContainerTypeFourtyFive': ContainerTypeFourtyFive,
+            'WeightFourtyFive': WeightFourtyFive, 'WeightFourtyFiveUnit': WeightFourtyFiveUnit, 'QuantityFourtyFive': QuantityFourtyFive
+        })
+
+        var data = { 'BD': table };
+        data = JSON.stringify(data);
+
+        $.ajax({
+            type: 'post',
+            url: '/Booking/AjaxAddBooking',
+            data: data,
+            async: false,
+            contentType: "application/json; charset=utf-8",
+            success: function (response) {
+                if (response.Status != 0) {
+                    Swal.fire({
+                        title: 'Success',
+                        text: response.Message,
+                        icon: 'success'
+                    }).then((result) => {
+                        document.location = '@Url.Action("LiveBookings", "Booking")';
+                    });
+                } else {
+                    Swal.fire({
+                        title: 'Error',
+                        text: response.Message,
+                        icon: 'error'
+                    })
+                }
+            },
+            error: function (err) {
+                alert(err.responseText);
+            }
+        });
+    }
+
+    function Load() {
+        var ShipmentType = document.getElementById("ShipmentTypeS").value;
+
+        var data = { 'ShipmentType': ShipmentType }
+        data = JSON.stringify(data);
+
+        $.ajax({
+            url: "/Booking/GetBookings",
+            data: data,
+            type: "POST",
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (response) {
+                var PickUpLocation = [];
+                var DropOffLocation = [];
+                for (i = 0; i < response.length; i++) {
+                    var location = {};
+                    location = response[i].PickUpLocation;
+                    PickUpLocation.push(location);
+                }
+                for (i = 0; i < response.length; i++) {
+                    var location = {};
+                    location = response[i].DropOffLocation;
+                    DropOffLocation.push(location);
+                }
+                $("#PickUpLocation").autocomplete({
+                    source: PickUpLocation
+                });
+                $("#DropOffLocation").autocomplete({
+                    source: DropOffLocation
+                });
+
+                $('#tblSummary').DataTable({
+                    "destroy": true,
+                    "bLengthChange": false,
+                    "aaData": response,
+                    "bPaginate": true,
+                    "pageLength": 25,
+                    "bInfo": true,
+                    "paging": true,
+                    order: [],
+                    "searching": true,
+                    "columns": [
+                        {
+                            "data": "BookingNo",
+                            "orderable": false,
+                            "render": function (data, type, row, meta) {
+                                if (type === 'display') {
+                                    if (row.Approved == 0) {
+                                        data = "<div class=\"text-center\"><button class=\"btn btn-sm btn-danger\" title=\"Delete\" data-toggle=\"tooltip\" data-placement=\"bottom\" onclick=\"DeleteFromMarket('" + row.BookingNo + "')\"><i class=\"fa fa-trash\"></i></button></div>"
+                                    }
+                                    else {
+                                        data = "<div class=\"text-center\"><button class=\"btn btn-sm btn-warning\" title=\"Accept\" data-toggle=\"tooltip\" data-placement=\"bottom\" onclick=\"Status('" + row.BookingNo + "','" + row.EmailId + "')\">Pending</button></div>"
+                                    }
+                                }
+                                return data;
+                            }
+                        },
+                        { "data": "BookingNo" },
+                        {
+                            "data": "ActualAmount",
+                            "orderable": false,
+                            "render": function (data, type, row, meta) {
+                                if (type === 'display') {
+                                    if (row.ActualAmount == 0) {
+                                        data = "<div class=\"text-center\">-</div>"
+                                    }
+                                    else {
+                                        data = row.ActualAmount
+                                    }
+                                }
+                                return data;
+                            }
+                        },
+                        { "data": "BookingDateTime" },
+                        { "data": "PlanDate" },
+                        {
+                            "data": "QuantityTwenty",
+                            "orderable": false,
+                            "render": function (data, type, row, meta) {
+                                if (type === 'display') {
+                                    if (row.QuantityTwenty == 0) {
+                                        data = "<div class=\"text-center\">-</div>"
+                                    }
+                                    else {
+                                        data = row.QuantityTwenty
+                                    }
+                                }
+                                return data;
+                            }
+                        },
+                        {
+                            "data": "QuantityFourty",
+                            "orderable": false,
+                            "render": function (data, type, row, meta) {
+                                if (type === 'display') {
+                                    if (row.QuantityFourty == 0) {
+                                        data = "<div class=\"text-center\">-</div>"
+                                    }
+                                    else {
+                                        data = row.QuantityFourty
+                                    }
+                                }
+                                return data;
+                            }
+                        },
+                        {
+                            "data": "QuantityFourtyFive",
+                            "orderable": false,
+                            "render": function (data, type, row, meta) {
+                                if (type === 'display') {
+                                    if (row.QuantityFourtyFive == 0) {
+                                        data = "<div class=\"text-center\">-</div>"
+                                    }
+                                    else {
+                                        data = row.QuantityFourtyFive
+                                    }
+                                }
+                                return data;
+                            }
+                        },
+                        { "data": "PickUpLocation" },
+                        { "data": "DropOffLocation" },
+                        {
+                            "data": "TimeOfBid",
+                            "orderable": false,
+                            "render": function (data, type, row, meta) {
+                                if (type === 'display') {
+                                    if (row.TimeOfBid == "") {
+                                        data = "<div class=\"text-center\">-</div>"
+                                    }
+                                    else {
+                                        data = row.TimeOfBid
+                                    }
+                                }
+                                return data;
+                            }
+                        }
+                    ],
+                    mark: true
+                });
+            },
+            error: function (error) {
+                alert(error.responseText);
+            }
+        });
+    }
+
+    function DeleteFromMarket(BookingNo) {
+        $("#modalDelete").modal('show');
+        $('#isDeleted').click(function () {
+            var data = { 'DD': BookingNo };
+            data = JSON.stringify(data);
+
+            $.ajax({
+                url: "/Booking/AjaxDeleteBooking",
+                data: data,
+                type: "POST",
+                contentType: "application/json; charset=utf-8",
+                success: function (response) {
+                    if (response.Status != 0) {
+                        Swal.fire({
+                            title: 'Success',
+                            text: response.Message,
+                            icon: 'success'
+                        }).then((result) => {
+                            document.location = '@Url.Action("LiveBookings", "Booking")';
+                        });
+                    } else {
+                        Swal.fire({
+                            title: 'Error',
+                            text: response.Message,
+                            icon: 'error'
+                        })
+                    }
+                },
+                error: function (err) {
+                    alert(err.responseText);
+                }
+            });
+        });
+    }
+
+    function Status(BookingNo, EmailId) {
+        $("#modalStatus").modal('show');
+        $('#isAccepted').click(function () {
+            var data = { 'AD': BookingNo, 'EI': EmailId };
+            data = JSON.stringify(data);
+
+            $.ajax({
+                type: 'post',
+                url: '/Booking/AjaxAcceptedBooking',
+                data: data,
+                async: false,
+                contentType: "application/json; charset=utf-8",
+                success: function (response) {
+                    if (response.Status != 0) {
+                        Swal.fire({
+                            title: 'Success',
+                            text: response.Message,
+                            icon: 'success'
+                        }).then((result) => {
+                            document.location = '@Url.Action("LiveBookings", "Booking")';
+                        });
+                    } else {
+                        Swal.fire({
+                            title: 'Error',
+                            text: response.Message,
+                            icon: 'error'
+                        })
+                    }
+                },
+                error: function (err) {
+                    alert(err.responseText);
+                }
+            });
+        });
+
+        $('#isRejected').click(function () {
+            var data = { 'RD': BookingNo };
+            data = JSON.stringify(data);
+
+            $.ajax({
+                type: 'post',
+                url: '/Booking/AjaxRejectedBooking',
+                data: data,
+                async: false,
+                contentType: "application/json; charset=utf-8",
+                success: function (response) {
+                    if (response.Status != 0) {
+                        Swal.fire({
+                            title: 'Success',
+                            text: response.Message,
+                            icon: 'success'
+                        }).then((result) => {
+                            $(".modal").hide();
+                            document.location = '@Url.Action("LiveBookings", "Booking")';
+                        });
+                    } else {
+                        Swal.fire({
+                            title: 'Error',
+                            text: response.Message,
+                            icon: 'error'
+                        })
+                    }
+                },
+                error: function (err) {
+                    alert(err.responseText);
+                }
+            });
+        });
+    }
+
+    function ShowSummary() {
+        $("#BookingEntry").hide();
+        $("#BookingSummary").show();
+    }
+
+    function ShowEntry() {
+        $("#BookingSummary").hide();
+        $("#BookingEntry").show();
+    }
+</script>

@@ -1,0 +1,525 @@
+﻿@model IEnumerable<FutureTransportEntities.BusinessEntities.ManageUser>
+
+@{
+    ViewBag.Title = "User-Company Mapping";
+    Layout = "~/Views/Shared/_LayoutDashboard.cshtml";
+}
+
+<style>
+
+
+    .tabs-menu ul li .active {
+        background-color: orange
+    }
+
+    .custom-switch-input:checked ~ .custom-switch-indicator {
+        background: #64A5FE;
+    }
+</style>
+<div id="tracker-loader" style="display: none;"></div>
+
+<div class=" content-area" id="divSummary">
+    <div class="page-header">
+        <h4 class="page-title">User-Company Mapping</h4>
+        @*<ol class="breadcrumb" id="IsDirect">
+                <li class="breadcrumb-item" id="btnAdd">
+                    <a onclick="addUser();" id="add" class="btn btn-primary btn-success" style="color: white; align-content: center; MARGIN-TOP: 6PX ">
+                        <i class="fa fa-plus" data-toggle="tooltip" data-placement="bottom" title="Add User" data-original-title="Add User" style="font-size:13px"></i>
+                    </a>
+                </li>
+            </ol>*@
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="form-horizontal">
+
+                        <div class="row">
+
+                            <div class="col-lg-3 col-sm-12">
+                                <div class="form-group">
+                                    <label class="form-label mandatory">User Name</label>
+                                    <div class="row gutters-xs">
+                                        <div class="col">
+                                            @Html.DropDownList("ddlUserList", (IEnumerable<SelectListItem>)ViewBag.UserList, "--Select-- ", new { @class = "form-control", @id = "ddlUserList", name = "ddlUserList", autocomplete = "off" })
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-3 col-sm-12" style="display:none">
+                                <div class="form-group">
+                                    <label class="form-label mandatory">Contact No</label>
+                                    <div class="row gutters-xs">
+                                        <div class="col">
+                                            @Html.TextBox("txtMainUserid", @Session["Tracker_userID"].ToString(),
+                                           new
+                                                {
+                                                    @class = "form-control ",
+                                                    @id = "txtMainUserid",
+                                           name = "txtMainUserid",
+                                                    autocomplete = "on"
+                                                })
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-3 col-sm-12">
+                                <div class="form-group">
+                                    <label class="form-label" style="visibility:hidden"> '</label>
+                                    <div class="row gutters-xs">
+                                        <div class="col">
+                                            <input type="button" id="btnShow" value="Show" class="btn btn-primary" style="margin-left:10px"
+                                                   onclick="getAssignedMenuForRole();" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-12 col-lg-4">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h4 class="card-title">Companies</h4>
+                                    </div>
+                                    <div class="card-body">
+                                        @foreach (var c in Model)
+                                        {
+                                            <ul class="list-group">
+                                                <li class="list-group-item">
+                                                    @Html.DisplayFor(m => c.CompanyName)
+                                                    <div class="material-switch pull-right">
+                                                        @if (c.Userid != 0)
+                                                        {
+                                                            <input id="switch_0@(c.CompID)"
+                                                                   name="switch_0@(c.CompID)"
+                                                                   value="@(c.CompID)"
+                                                                   type="checkbox"
+                                                                   checked class="_p_switch" />
+                                                        }
+                                                        else
+                                                        {
+                                                            <input id="switch_0@(c.CompID)"
+                                                                   name="switch_0@(c.CompID)"
+                                                                   value="@(c.CompID)"
+                                                                   type="checkbox" class="_p_switch" />
+                                                        }
+                                                        <label for="switch_0@(c.CompID)" class="label-primary"></label>
+                                                    </div>
+                                                </li>
+                                            </ul>
+                                        }
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group">
+                                <label class="form-label"></label>
+                                <div class="row gutters-xs">
+                                    <div class="col">
+                                        <button id="btnSave" class="btn btn-success btn-xs" style="margin-left:10px"
+                                                onclick="return AddSave();">
+                                            Save
+                                        </button>
+                                        @*<input type="button" name="clear" value="Clear" class="btn btn-default" title="clear" id="clearValue" />*@
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row" style="display:none">
+                            <div class="col-lg-12 col-sm-12">
+                                <div class="table-responsive">
+                                    <table id="tblUserSummary" class=" th_Background table table-striped table-bordered text-nowrap" style="width:100%">
+                                        <thead>
+                                            <tr>
+                                                @*<th>View</th>*@
+                                                <th>SrNo.</th>
+                                                <th>Username</th>
+                                                @*<th>Password</th>*@
+                                                <th>Company Assigned</th>
+                                                @*<th>Contact No</th>*@
+                                            </tr>
+                                        </thead>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class=" content-area overflow-hidden" id="divCreate" style="display:none">
+    <div class="page-header">
+        <h4 class="page-title">User-Company Mapping</h4>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <a onclick="BackToWorkOrder();" class="btn btn-primary btn-success text-right" style="align-content:center;color:white"><i class="fa fa-arrow-left" data-placement="bottom" title="Add Work Order"></i> </a>
+            </li>
+        </ol>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="panel panel-primary">
+                        <div class="panel-body tabs-menu-body">
+                            <div class="tab-content">
+                                <div class="tab-pane active " id="Create">
+                                    <div class="form-horizontal">
+                                        <div class="row">
+                                            <div class="col-lg-3 col-sm-12">
+                                                <div class="form-group">
+                                                    <label class="form-label mandatory">User Name</label>
+                                                    <div class="row gutters-xs">
+                                                        <div class="col">
+                                                            @Html.DropDownList("ddlUserList", (IEnumerable<SelectListItem>)ViewBag.UserList, "--Select-- ",
+                                                           new { @class = "form-control", @id = "ddlUserList", name = "ddlUserList", autocomplete = "off" })
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            @*<div class="col-lg-3 col-sm-12">
+                                                    <div class="form-group">
+                                                        <label class="form-label mandatory">Company Name</label>
+                                                        <div class="row gutters-xs">
+                                                            <div class="col">
+                                                                @Html.DropDownList("ddlCompanyList", (IEnumerable<SelectListItem>)ViewBag.CompanyList, "--Select-- ",
+                                                               new { @class = "form-control", @id = "ddlCompanyList", name = "ddlCompanyList", autocomplete = "off" })
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>*@
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label"></label>
+                                        <div class="row gutters-xs">
+                                            <div class="col">
+                                                <button id="btnSave" class="btn btn-success btn-xs" onclick="return AddSave();">Add</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    $(document).ready(function () {
+        //$('#btnAdd').show();
+        //$('#summary').show();
+        //$('#btnBack').hide();
+        //ShowUsers();
+
+    });
+
+    function addUser() {
+
+        $("#divSummary").hide();
+        $("#divCreate").show();
+    }
+
+    function getAssignedMenuForRole() {
+        $("#tracker-loader").fadeIn("slow");
+        var Userid = $("#ddlUserList").val();
+        if (Userid != "" || Userid != 0) {
+            var data = { 'Userid': Userid };
+            data = JSON.stringify(data);
+            $.ajax({
+                url: "/ManageUser/getAssignedMenuForRole",
+                data: data,
+                type: "POST",
+                contentType: "application/json; charset=utf-8",
+                //  dataType: "json",
+                success: function (response) {
+                    $("._p_switch").prop('checked', false);
+                    for (var i = 0; i < response.length; i++) {
+                        if (response[i].Userid != 0) {
+                            $("#switch_0" + response[i].CompID).prop('checked', true);
+                        }
+                    }
+                    $("#tracker-loader").fadeOut("slow");
+
+                },
+                error: function (errormessage) {
+                    $("#tracker-loader").fadeOut("slow");
+                    let str = errormessage.responseText;
+                    var a = str.indexOf("<title>") + 7;
+                    var b = str.indexOf("</title>");
+                    str = str.substring(a, b);
+                    alert("Something went wrong: " + str);
+                }
+            });
+        }
+    }
+
+    function ShowUsers() {
+
+        debugger;
+
+        var MainUserid = $("#txtMainUserid").val();
+
+        var Userid = $("#ddlUserList").val();
+
+        var data = { 'Userid': Userid }
+
+        data = JSON.stringify(data);
+
+        $.ajax({
+            type: 'POST',
+            url: '/ManageUser/GetUserCompanyDetails',
+            data: data,
+            // data: "",
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            async: true,
+            success: function (jsonResult) {
+
+                if (jsonResult == "[]") {
+                    alert('No Data Found')
+                } else {
+                    $('#tblUserSummary').DataTable({
+                        "destroy": true,
+                        "bLengthChange": false,
+                        "aaData": jsonResult,
+                        "bPaginate": false,
+                        "bInfo": false,
+                        "dom": 'Bfrtip',
+                        "buttons": [],
+                        "paging": true,
+                        "aaSorting": [],
+                        "columnDefs": [{
+                            "targets": 0,
+                            "orderable": false,
+                        }],
+                        "columns": [
+
+                            //{
+                            //    "data": "Userid",
+                            //    "orderable": false,
+                            //    "render": function (data, type, full, meta) {
+                            //        return "<button class='btn btn-primary btn-sm BtnView' onclick='ViewUserDetails(`" + data + "`)'><i class='fa fa-eye'></i><bitton>";
+                            //    }
+                            //},
+                            //{
+                            //    "data": "PONO",
+                            //    "orderable": false,
+                            //    "render": function (data, type, row, meta) {
+                            //        var disabled1;
+                            //        if (row.IsApproved == true) {
+                            //            disabled1 = 'disabled';
+                            //        }
+                            //        else {
+                            //            disabled1 = '';
+                            //        }
+                            //        return "<button class='btn btn-primary btn-sm BtnEdit' onclick='EditDetailsForSelectedPO(`" + data + "`)' " + disabled1 + "><i class='fa fa-edit'></i><bitton>";
+                            //    }
+                            //},
+                            { "data": "SrNo" },
+                            { "data": "Username" },
+                            //{ "data": "Password" },
+                            { "data": "CompanyName" },
+                            //{ "data": "ContactNo" },
+                        ]
+                    });
+                }
+            },
+            error: function (errormessage) {
+                alert(errormessage.responseText);
+
+            }
+        });
+        // ShowRightsAgainstUser();
+    }
+
+    function BackToWorkOrder() {
+        $("#divCreate").hide();
+        $("#divSummary").show();
+    }
+
+</script>
+
+<script type="text/javascript">
+
+    function ShowUserDetails() {
+        debugger;
+        var ddlUserName = $("#ddlCUserName").val();
+
+        try {
+            var data1 = { 'UserName': ddlUserName, ',Menusfrom': "" };
+            data = JSON.stringify(data1);
+            $.ajax({
+                url: "/ManageUser/BindMenuDetails",
+                data: data,
+                type: "POST",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    debugger;
+                    RepTableDataJsonwopaging($("#example3"), response, "CreateSearch", "CreateSearch")
+                },
+                error: function (errormessage) {
+                    alert("error");
+                    alert(errormessage.responseText);
+                }
+            });
+
+        } catch (ex) {
+
+        }
+    }
+
+    function SaveAssignRights() {
+        debugger;
+        try {
+
+            if ($("#ddlUserList").val() == "") {
+                alert("Plase Select User Name.");
+                $("#ddlUserList").focus();
+                return;
+            }
+
+            var rowlenght = 0;
+
+            try {
+                $('#example2 tbody tr').each(function (i, row) {
+                    if ($(this).find('input.checklist').is(':checked')) {
+                        rowlenght = rowlenght + 1;
+                    }
+                });
+            } catch (ex) { rowlenght = 0; }
+
+
+            if (rowlenght == 0) {
+                alert('Please Select Menu Details');
+                return;
+            };
+
+            var SelectedData = new Array();
+            $('#example2 tbody tr').each(function (i, row) {
+                //debugger;
+                if ($(this).find('input.checklist').is(':checked')) {
+                    //debugger;
+                    var data1 = {};
+                    var checklistAccess = false;
+                    var checklistAdd = false;
+                    var checklistUpdate = false;
+                    var checklistCancel = false;
+                    var checklistView = false;
+                    var checklistMail = false;
+                    var MenuId = 0;
+                    $(this).find('input').each(function () {
+                        //debugger;
+                        //alert(this.id);
+                        MenuId = $(this).val();
+                        if (this.name == "checklistAccess") {
+                            checklistAccess = this.checked;
+                        } else if (this.name == "checklistAdd") {
+                            checklistAdd = this.checked;
+                        }
+                        else if (this.name == "checklistUpdate") {
+                            checklistUpdate = this.checked;
+                        }
+                        else if (this.name == "checklistCancel") {
+                            checklistCancel = this.checked;
+                        }
+                        else if (this.name == "checklistView") {
+                            checklistView = this.checked;
+                        }
+                        else if (this.name == "checklistMail") {
+                            checklistMail = this.checked;
+                        }
+                    });
+
+                    data1 = { 'MenuId': MenuId, 'IsAccess': checklistAccess, 'CanAdd': checklistAdd, 'CanUpdate': checklistUpdate, 'CanCancel': checklistCancel, 'CanView': checklistView, 'CanMail': checklistMail };
+                    SelectedData.push(data1);
+                }
+            });
+
+            $.ajax({
+                type: 'POST',
+                url: '/ManageUser/SaveAssingRight',
+                data: '{UserId: ' + JSON.stringify($("#ddlUserName").val()) + ', RightsData: ' + JSON.stringify(SelectedData) + '}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                async: false,
+                success: function (data) {
+                    alert(data);
+                    window.location = "/ManageUser/ManageUser";
+                },
+                error: function (errormessage) {
+                    alert(errormessage.responseText);
+                }
+            });
+        }
+        catch (ex) { alert(ex.message); };
+    }
+
+</script>
+
+@*<div class="row">
+        <div class="col-sm-12 col-lg-12">
+            <h4>Menu List</h4>
+            <div class="row">
+                @{
+                    var Count = 0;
+                    var Count1 = 0;
+
+                    <div class="col-sm-12 col-lg-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4 class="card-title">Companies</h4>
+                            </div>
+                            <div class="card-body">
+                                @foreach (var c in Model)
+                                {
+                                    if (MenuID == c.MainCompID)
+                                    {
+                                        Count = Count + 1;
+
+                                        <ul class="list-group">
+                                            <li class="list-group-item">
+                                                @Html.DisplayFor(m => c.CompID)
+                                                <div class="material-switch pull-right">
+                                                    @if (c.IsActive)
+                                                    {
+                                                        <input id="switch_0@(c.CompID)"
+                                                               name="switch_0@(c.CompID)"
+                                                               value="@(c.CompID)"
+                                                               type="checkbox"
+                                                               checked class="_p_switch" />
+                                                    }
+                                                    else
+                                                    {
+                                                        <input id="switch_0@(c.CompID)"
+                                                               name="switch_0@(c.CompID)"
+                                                               value="@(c.CompID)"
+                                                               type="checkbox" class="_p_switch" />
+                                                    }
+                                                    <label for="switch_0@(c.CompID)" class="label-primary"></label>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                    }
+                                }
+
+                            </div>
+                        </div>
+                    </div>
+                }
+
+            </div>
+
+        </div>
+    </div>*@

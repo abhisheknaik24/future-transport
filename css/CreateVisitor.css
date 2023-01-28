@@ -1,0 +1,20 @@
+﻿
+.input-group-prepend>.btn, .input-group-append>.btn, .input-group-btn>.btn {
+height: 100%;
+border-color: rgba(0, 40, 100, 0.92);
+background: #fff;
+color:#6b6f80 ;
+}
+.btn-outline-info:not(:disabled):not(.disabled):active, .btn-outline-info:not(:disabled):not(.disabled).active, .show>.btn-outline-info.dropdown-toggle{
+height: 100%;
+border-color: rgba(0, 40, 100, 0.92) !important;
+background:#fff!important;
+color:#6b6f80 !important;
+}
+.selected{
+color: #fff !important;
+border-color: #9f78ff !important;
+background: #9f78ff !important;
+padding: 5px 25px !important;
+/*box-shadow: 0 8px 6px -6px black !important;*/
+}

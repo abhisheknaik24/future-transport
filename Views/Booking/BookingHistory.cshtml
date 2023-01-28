@@ -1,0 +1,237 @@
+﻿
+@{
+    ViewBag.Title = "Payment Summary";
+    Layout = "~/Views/Shared/_LayoutDashboard.cshtml";
+}
+
+<div id="BookingSummary">
+    <div class="page-header">
+        <h4 class="page-title">Payment Summary</h4>
+    </div>
+    <div class="card">
+        <div class="card-body">
+            <div class="row no-gutters mt-5">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <div class="row no-gutters">
+                            <div class="col-md-5">
+                                <label class="form-label mt-2">Shipment Type :</label>
+                            </div>
+                            <div class="col-md-5">
+                                <select id="ShipmentTypeS" class="form-control">
+                                    <option value="Import">Import</option>
+                                    <option value="Export">Export</option>
+                                    <option value="0" selected>Both</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <button class="btn btn-warning" title="Search" data-toggle="tooltip" data-placement="bottom" onclick="Load()"><i class="fa fa-search"></i></button>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="th_Background table table-striped table-bordered text-center text-nowrap" style="width:100%" id="tblSummary">
+                    <thead class="bg-primary">
+                        <tr>
+                            <th>Action</th>
+                            <th>Booking No</th>
+                            <th>Best Rate</th>
+                            <th>Booking Date & Time</th>
+                            <th>Plan Date</th>
+                            <th>20</th>
+                            <th>40</th>
+                            <th>45</th>
+                            <th>Pickup Location</th>
+                            <th>Dropoff Location</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="Payment">
+    <div class="page-header">
+        <h4 class="page-title">Scan this code for payment</h4>
+        <button class="btn btn-primary" title="Back" data-toggle="tooltip" data-placement="bottom" onclick="ShowSummary()"><i class="fa fa-arrow-left"></i></button>
+    </div>
+    <div class="card">
+        <div class="card-body">
+            <img style="height:500px;" src="" id="QRCode" />
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $("#Payment").hide();
+        Load();
+    });
+
+    function Load() {
+        var ShipmentType = document.getElementById("ShipmentTypeS").value;
+
+        var data = { 'ShipmentType': ShipmentType }
+        data = JSON.stringify(data);
+
+        $.ajax({
+            url: "/Booking/GetBookingsHistory",
+            data: data,
+            type: "POST",
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (response) {
+                var PickUpLocation = [];
+                var DropOffLocation = [];
+                for (i = 0; i < response.length; i++) {
+                    var location = {};
+                    location = response[i].PickUpLocation;
+                    PickUpLocation.push(location);
+                }
+                for (i = 0; i < response.length; i++) {
+                    var location = {};
+                    location = response[i].DropOffLocation;
+                    DropOffLocation.push(location);
+                }
+                $("#PickUpLocation").autocomplete({
+                    source: PickUpLocation
+                });
+                $("#DropOffLocation").autocomplete({
+                    source: DropOffLocation
+                });
+
+                $('#tblSummary').DataTable({
+                    "destroy": true,
+                    "bLengthChange": false,
+                    "aaData": response,
+                    "bPaginate": true,
+                    "pageLength": 25,
+                    "bInfo": true,
+                    "paging": true,
+                    order: [],
+                    "searching": true,
+                    "columns": [
+                        {
+                            "data": "BookingNo",
+                            "orderable": false,
+                            "render": function (data, type, row, meta) {
+                                if (type === 'display') {
+                                    data = "<div class=\"text-center\"><button class=\"btn btn-sm btn-success\" title=\"Payment\" data-toggle=\"tooltip\" data-placement=\"bottom\" onclick=\"Payment('" + row.BookingNo + "')\"><i class=\"fa fa-money\"></i></button></div>"
+                                }
+                                return data;
+                            }
+                        },
+                        { "data": "BookingNo" },
+                        {
+                            "data": "ActualAmount",
+                            "orderable": false,
+                            "render": function (data, type, row, meta) {
+                                if (type === 'display') {
+                                    if (row.ActualAmount == 0) {
+                                        data = "<div class=\"text-center\">-</div>"
+                                    }
+                                    else {
+                                        data = row.ActualAmount
+                                    }
+                                }
+                                return data;
+                            }
+                        },
+                        { "data": "BookingDateTime" },
+                        { "data": "PlanDate" },
+                        {
+                            "data": "QuantityTwenty",
+                            "orderable": false,
+                            "render": function (data, type, row, meta) {
+                                if (type === 'display') {
+                                    if (row.QuantityTwenty == 0) {
+                                        data = "<div class=\"text-center\">-</div>"
+                                    }
+                                    else {
+                                        data = row.QuantityTwenty
+                                    }
+                                }
+                                return data;
+                            }
+                        },
+                        {
+                            "data": "QuantityFourty",
+                            "orderable": false,
+                            "render": function (data, type, row, meta) {
+                                if (type === 'display') {
+                                    if (row.QuantityFourty == 0) {
+                                        data = "<div class=\"text-center\">-</div>"
+                                    }
+                                    else {
+                                        data = row.QuantityFourty
+                                    }
+                                }
+                                return data;
+                            }
+                        },
+                        {
+                            "data": "QuantityFourtyFive",
+                            "orderable": false,
+                            "render": function (data, type, row, meta) {
+                                if (type === 'display') {
+                                    if (row.QuantityFourtyFive == 0) {
+                                        data = "<div class=\"text-center\">-</div>"
+                                    }
+                                    else {
+                                        data = row.QuantityFourtyFive
+                                    }
+                                }
+                                return data;
+                            }
+                        },
+                        { "data": "PickUpLocation" },
+                        { "data": "DropOffLocation" }
+                    ],
+                    mark: true
+                });
+            },
+            error: function (error) {
+                alert(error.responseText);
+            }
+        });
+    }
+
+    function Payment(BookingNo) {
+        var data = { 'BookingNo': BookingNo };
+        data = JSON.stringify(data);
+
+        $.ajax({
+            type: 'POST',
+            url: '/Booking/AjaxPaymentBooking',
+            data: data,
+            contentType: "application/json; charset=utf-8",
+            success: function (response) {
+                $("#BookingSummary").hide();
+                $("#Payment").show();
+                document.getElementById("QRCode").src = response;
+            },
+            error: function (err) {
+                alert(err.responseText);
+            }
+        });
+    }
+
+    function ShowSummary() {
+        $.ajax({
+            type: 'POST',
+            url: '/Booking/AjaxAddPayment',
+            contentType: "application/json; charset=utf-8",
+            success: function (response) {
+                $("#Payment").hide();
+                $("#BookingSummary").show();
+            },
+            error: function (err) {
+                alert(err.responseText);
+            }
+        });
+    }
+</script>
